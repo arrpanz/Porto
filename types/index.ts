@@ -5,6 +5,7 @@ export interface BaseVideoItem {
   title: string
   description: string
   orientation: VideoOrientation
+  category?: string
 }
 
 export interface LocalVideoItem extends BaseVideoItem {
@@ -19,4 +20,9 @@ export interface YouTubeVideoItem extends BaseVideoItem {
   index?: number
 }
 
-export type VideoItem = LocalVideoItem | YouTubeVideoItem
+export interface InstagramVideoItem extends BaseVideoItem {
+  type: "instagram"
+  postUrl: string
+}
+
+export type VideoItem = LocalVideoItem | YouTubeVideoItem | InstagramVideoItem

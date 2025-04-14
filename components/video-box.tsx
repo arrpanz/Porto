@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useMobile } from "@/hooks/use-mobile"
 import type { VideoItem } from "@/types"
 import YouTubeEmbed from "@/components/youtube-embed"
+import InstagramEmbed from "@/components/instagram-embed"
 import Image from "next/image"
 
 interface VideoBoxProps {
@@ -23,6 +24,15 @@ export function VideoBox({ video }: VideoBoxProps) {
       : video.orientation === "square"
         ? "aspect-square"
         : "aspect-video"
+
+  // For Instagram videos, render the Instagram embed component
+  if (video.type === "instagram") {
+    return (
+      <div className={`relative overflow-hidden rounded-lg ${aspectRatioClass}`}>
+        <InstagramEmbed postUrl={video.postUrl} title={video.title} />
+      </div>
+    )
+  }
 
   // For YouTube videos, render the YouTube embed component
   if (video.type === "youtube") {
@@ -108,27 +118,34 @@ export function VideoBox({ video }: VideoBoxProps) {
   // Preload video to check if it's valid
   useEffect(() => {
     let isMounted = true // Add a flag to track component mount status
+    let videoCheckTimeout: NodeJS.Timeout
 
     const checkVideo = async () => {
-      try {
-        const response = await fetch(video.videoUrl, { method: "HEAD" })
-        if (!response.ok && isMounted) {
-          setVideoError(true)
-        }
-      } catch (error) {
-        console.error("Error checking video:", error)
-        if (isMounted) {
-          setVideoError(true)
+      if (video.type === "local" && video.videoUrl) {
+        try {
+          const response = await fetch(video.videoUrl, { method: "HEAD" })
+          if (!response.ok && isMounted) {
+            setVideoError(true)
+          }
+        } catch (error) {
+          console.error("Error checking video:", error)
+          if (isMounted) {
+            setVideoError(true)
+          }
         }
       }
     }
 
-    checkVideo()
+    // Delay the video check to avoid immediate checks on mount
+    videoCheckTimeout = setTimeout(() => {
+      checkVideo()
+    }, 500)
 
     return () => {
       isMounted = false // Set the flag to false when the component unmounts
+      clearTimeout(videoCheckTimeout) // Clear the timeout if the component unmounts
     }
-  }, [video.videoUrl])
+  }, [video.videoUrl, video.type])
 
   return (
     <div
