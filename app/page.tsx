@@ -5,7 +5,7 @@ import type React from "react"
 import { useRef, useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ChevronDown, Instagram } from "lucide-react"
+import { ChevronDown, Instagram, FileText } from "lucide-react"
 import VideoGallery from "@/components/video-gallery"
 import type { VideoItem } from "@/types"
 
@@ -56,7 +56,7 @@ export default function Home() {
       orientation: "portrait",
       category: "AD VIDEOS",
     },
-   
+
     // VLOGISH
     {
       id: "youtube-2",
@@ -79,8 +79,7 @@ export default function Home() {
       category: "VLOGISH",
     },
 
-   
-     {
+    {
       id: "youtube-8",
       type: "youtube",
       title: "Tech Tutorial",
@@ -90,8 +89,8 @@ export default function Home() {
       orientation: "portrait",
       category: "VLOGISH",
     },
-   
-     //Misc
+
+    //Misc
     // Instagram post in Misc category
     {
       id: "instagram-1",
@@ -102,11 +101,12 @@ export default function Home() {
       orientation: "portrait",
       category: "MISC",
     },
-     {
+    {
       id: "instagram-2",
       type: "instagram",
       title: "9to5",
       description: "Nine To Five",
+      // Updated to use the correct format for Instagram embeds
       postUrl: "https://www.instagram.com/p/DEIlZbEzuuy/",
       orientation: "portrait",
       category: "MISC",
@@ -172,11 +172,13 @@ export default function Home() {
           </nav>
           <div className="flex items-center gap-4">
             <a
-              href="/cv.html"
-              download="Arpan_Wasti_CV.html"
-              className="hidden md:inline-block bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-md transition-colors"
+              href="https://drive.google.com/file/d/1-wbleXpKZSvU_RLbMAWdwsuGiFHDY1cl/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-md transition-colors"
             >
-              Download CV
+              <FileText className="h-4 w-4" />
+              <span>View CV</span>
             </a>
             <button
               onClick={() => scrollToSection(contactRef)}
@@ -308,11 +310,13 @@ export default function Home() {
             </div>
 
             <a
-              href="/cv.html"
-              download="Arpan_Wasti_CV.html"
-              className="inline-block bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-md transition-colors font-medium"
+              href="https://drive.google.com/file/d/1-wbleXpKZSvU_RLbMAWdwsuGiFHDY1cl/view?usp=drive_link"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-8 py-3 rounded-md transition-colors font-medium"
             >
-              Download CV
+              <FileText className="h-5 w-5" />
+              <span>View CV</span>
             </a>
           </div>
 
