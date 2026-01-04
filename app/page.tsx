@@ -27,6 +27,15 @@ export default function Home() {
       orientation: "portrait",
       category: "AD VIDEOS",
     },
+      {
+      id: "instagram-1",
+      type: "instagram",
+      title: "Restorefine",
+      description: "Client Video",
+      postUrl: "https://www.instagram.com/p/DFZoS-1JpHh/",
+      orientation: "portrait",
+      category: "MISC",
+    },
     {
       id: "youtube-1",
       type: "youtube",
