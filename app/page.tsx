@@ -27,16 +27,14 @@ export default function Home() {
       orientation: "portrait",
       category: "AD VIDEOS",
     },
-    {
-      id: "youtube-1",
-      type: "youtube",
-      title: "Ad Video 1",
-      description: "Commercial advertisement",
-      videoId: "Dw8BRAAaQSY",
-      playlistId: "PLxUXKzH1-IUAIAE0F7ow8IW8J-sn_a042",
-      index: 3,
+      {
+      id: "instagram-1",
+      type: "instagram",
+      title: "Restorefine",
+      description: "Client Video",
+      postUrl: "https://www.instagram.com/p/DFZoS-1JpHh/",
       orientation: "portrait",
-      category: "AD VIDEOS",
+      category: "MISC",
     },
     {
       id: "youtube-7",
