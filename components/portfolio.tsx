@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { employment, profile, projects, stats, toolkit, videos, type Category, type Video } from "@/lib/data"
 
-const FILTERS: ("All" | Category)[] = ["All", "Ad Videos", "Social Media", "Cinematic Videos"]
+const FILTERS: Category[] = ["Social Media", "Ad Videos", "Cinematic Videos"]
 const thumb = (id: string) => `/thumbs/${id}.jpg`
 const pad = (n: number) => String(n).padStart(2, "0")
 
 export default function Portfolio() {
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("All")
+  const [filter, setFilter] = useState<Category>("Social Media")
   const [active, setActive] = useState<Video | null>(null)
   const [openExp, setOpenExp] = useState(0)
   const [copied, setCopied] = useState(false)
@@ -24,7 +24,7 @@ export default function Portfolio() {
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const drag = useRef({ down: false, x: 0, left: 0, moved: false })
 
-  const shown = useMemo(() => (filter === "All" ? videos : videos.filter((v) => v.category === filter)), [filter])
+  const shown = useMemo(() => videos.filter((v) => v.category === filter), [filter])
   // hero film strip: client work only (own-channel films stay in their category)
   const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait" && v.category !== "Cinematic Videos"), [])
 
@@ -345,7 +345,7 @@ export default function Portfolio() {
               {FILTERS.map((f) => (
                 <button key={f} role="tab" aria-selected={filter === f} className={filter === f ? "on" : ""} onClick={() => setFilter(f)}>
                   {f}
-                  <sup>{f === "All" ? videos.length : videos.filter((v) => v.category === f).length}</sup>
+                  <sup>{videos.filter((v) => v.category === f).length}</sup>
                 </button>
               ))}
             </div>
