@@ -1,29 +1,20 @@
-import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter_Tight, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 
-const inter = Inter({ subsets: ["latin"] })
+const sans = Inter_Tight({ subsets: ["latin"], variable: "--font-sans" })
+const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export const metadata: Metadata = {
-  title: "Arpan Wasti - Video Editor & Filmmaker",
-  description: "Portfolio of Arpan Wasti, an aspiring filmmaker and video editor",
-    generator: 'v0.app'
+  title: "Arpan Wasti | Video Editor & Filmmaker",
+  description:
+    "Portfolio of Arpan Wasti (arrpanz), a video editor and filmmaker from Nepal cutting brand films, tech shorts and stories.",
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          {children}
-        </ThemeProvider>
-      </body>
+    <html lang="en" className={`${sans.variable} ${mono.variable}`}>
+      <body>{children}</body>
     </html>
   )
 }
