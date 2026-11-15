@@ -5,7 +5,6 @@ import { employment, profile, projects, stats, toolkit, videos, type Category, t
 
 const FILTERS: ("All" | Category)[] = ["All", "Ad Videos", "Social Media", "Cinematic Videos"]
 const thumb = (id: string) => `/thumbs/${id}.jpg`
-const HERO_ID = "2vrnZd0FzC4"
 const pad = (n: number) => String(n).padStart(2, "0")
 
 export default function Portfolio() {
@@ -26,7 +25,8 @@ export default function Portfolio() {
   const drag = useRef({ down: false, x: 0, left: 0, moved: false })
 
   const shown = useMemo(() => (filter === "All" ? videos : videos.filter((v) => v.category === filter)), [filter])
-  const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait"), [])
+  // hero film strip: client work only (own-channel films stay in their category)
+  const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait" && v.category !== "Cinematic Videos"), [])
 
   // Running timecode (30 fps) in the hero
   useEffect(() => {
@@ -234,7 +234,6 @@ export default function Portfolio() {
 
   return (
     <>
-      <div className="gridlines" aria-hidden />
       <div className="grain" aria-hidden />
       <div className="progress" aria-hidden>
         <div ref={progressRef} />
@@ -244,7 +243,7 @@ export default function Portfolio() {
       </div>
 
       <header className="nav">
-        <a href="#top" className="logo">
+        <a href={profile.instagram} target="_blank" rel="noopener noreferrer" className="logo" aria-label="arrpanz on Instagram">
           arrpanz<i />
         </a>
         <nav className={menuOpen ? "open" : ""}>
@@ -266,23 +265,8 @@ export default function Portfolio() {
       <main id="top">
         {/* ───────── HERO ───────── */}
         <section className="hero">
-          <div className="hero-bg" aria-hidden>
-            <img src={thumb(HERO_ID)} alt="" />
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${HERO_ID}?autoplay=1&mute=1&loop=1&playlist=${HERO_ID}&start=6&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1`}
-              title="Background reel"
-              allow="autoplay; encrypted-media"
-              tabIndex={-1}
-            />
-          </div>
+          <div className="hero-bg" aria-hidden />
           <div className="hero-meta">
-            <span className="rec">
-              <i /> REC
-            </span>
-            <span ref={tcRef} className="tc">
-              00:00:00:00
-            </span>
-            <span className="hide-sm">1080 × 1920 · 30 FPS</span>
             <span className="avail">
               <i /> Available for projects
             </span>
@@ -305,8 +289,8 @@ export default function Portfolio() {
 
           <div className="hero-foot">
             <ul className="brackets">
-              <li>[{profile.location}]</li>
-              <li>[{profile.title}]</li>
+              <li>{profile.location}</li>
+              <li>{profile.title}</li>
               <li>
                 <i aria-hidden /> <span ref={clockRef}>Kathmandu time</span>
               </li>
@@ -354,7 +338,6 @@ export default function Portfolio() {
         <section id="work" className="section">
           <div className="section-head reveal">
             <span className="eyebrow">Featured works</span>
-            <span className="files"><b>SCENE_01.MP4</b><b>MASTER_EDIT.DRP</b></span>
             <h2>
               Frames that <em>earn</em> the next one.
             </h2>
@@ -430,7 +413,7 @@ export default function Portfolio() {
                 →
               </button>
             </div>
-            <p className="reel-hint">Hover to preview · Click for sound · Swipe, drag or use the arrows</p>
+            <p className="reel-hint">Hover to preview, click for sound, swipe or use the arrows</p>
           </div>
           <p className="more reveal">
             More on{" "}
@@ -448,25 +431,23 @@ export default function Portfolio() {
         <section id="experience" className="section">
           <div className="section-head reveal">
             <span className="eyebrow">Experience</span>
-            <span className="files"><b>A_CAM_012.MXF</b><b>TIMELINE_V3.DRP</b></span>
             <h2>
-              Two tracks, <em>one timeline.</em>
+              Jobs and projects, <em>side by side.</em>
             </h2>
-            <p className="lede">Jobs on one track, one-off projects on the other, the way they&apos;d sit in an edit.</p>
+            <p className="lede">Where I&apos;ve been employed, and the one-off productions I&apos;ve crewed on.</p>
           </div>
 
           <div className="tracks">
             <div className="track">
-              <div className="track-head reveal">
-                <b>V1</b>
-                <span>Employment</span>
-                <small>{pad(employment.length)} clips</small>
-              </div>
+              <h3 className="track-title reveal">
+                Where I&apos;ve <em>worked</em>
+                <small>{employment.length} roles</small>
+              </h3>
               <ol className="exp">
                 {employment.map((e, i) => (
                   <li key={e.role + e.org} className={`reveal ${openExp === i ? "open" : ""}`}>
                     <button onClick={() => setOpenExp(openExp === i ? -1 : i)} aria-expanded={openExp === i}>
-                      <span className="idx">[{String(i + 1).padStart(3, "0")}]</span>
+                      <span className="dot" aria-hidden />
                       <span className="what">
                         <strong>{e.role}</strong>
                         <small>{e.org}</small>
@@ -503,37 +484,17 @@ export default function Portfolio() {
             </div>
 
             <div className="track">
-              <div className="track-head alt reveal">
-                <b>V2</b>
-                <span>Projects</span>
-                <small>{pad(projects.length)} clips</small>
-              </div>
-              <ul className="slates">
-                {projects.map((p, i) => (
-                  <li key={p.title} className="slate reveal">
-                    <div className="slate-top" aria-hidden />
-                    <dl>
-                      <div className="wide">
-                        <dt>Prod.</dt>
-                        <dd>{p.title}</dd>
-                      </div>
-                      <div>
-                        <dt>{p.byLabel}</dt>
-                        <dd>{p.by}</dd>
-                      </div>
-                      <div>
-                        <dt>Role</dt>
-                        <dd>{p.role}</dd>
-                      </div>
-                      <div>
-                        <dt>Type</dt>
-                        <dd>{p.type}</dd>
-                      </div>
-                      <div>
-                        <dt>Slate</dt>
-                        <dd>{pad(i + 1)}</dd>
-                      </div>
-                    </dl>
+              <h3 className="track-title reveal">
+                What I&apos;ve <em>been part of</em>
+                <small>{projects.length} projects</small>
+              </h3>
+              <ul className="projs">
+                {projects.map((p) => (
+                  <li key={p.title} className="proj reveal">
+                    <span className="proj-type">{p.type}</span>
+                    <h4>{p.title}</h4>
+                    <p>{p.by}</p>
+                    <span className="proj-role">{p.role}</span>
                     {p.videoId && (
                       <button className="watch" data-play onClick={() => openById(p.videoId)}>
                         <i aria-hidden>▶</i> Watch
@@ -556,7 +517,6 @@ export default function Portfolio() {
           </div>
           <div className="about-copy reveal">
             <span className="eyebrow">Meet Arpan</span>
-            <span className="files"><b>TAKE_08.MOV</b><b>COLOR_PASS.MOV</b></span>
             <h2>
               Editor by craft, <em>filmmaker</em> at heart.
             </h2>
