@@ -15,6 +15,7 @@ export default function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [idx, setIdx] = useState(0) // centred slide in the reel
   const [hoverId, setHoverId] = useState<string | null>(null)
+  const [loopMsg, setLoopMsg] = useState<string | null>(null)
 
   const tcRef = useRef<HTMLSpanElement>(null)
   const clockRef = useRef<HTMLSpanElement>(null)
@@ -23,6 +24,7 @@ export default function Portfolio() {
   const trackRef = useRef<HTMLDivElement>(null)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const drag = useRef({ down: false, x: 0, left: 0, moved: false })
+  const loopTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const shown = useMemo(() => videos.filter((v) => v.category === filter), [filter])
   // hero film strip: a sample of client work (own-channel films stay in their category)
@@ -151,6 +153,24 @@ export default function Portfolio() {
     if (!el) return
     t.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - t.clientWidth / 2, behavior: smooth ? "smooth" : "instant" })
   }, [])
+
+  // Step with wrap-around: past the last video it rewinds to the first (and back), with a visible cue.
+  const stepReel = (dir: number) => {
+    const n = shown.length
+    if (n < 2) return
+    const target = idx + dir
+    if (target >= 0 && target < n) return goTo(target)
+    const t = trackRef.current
+    if (!t) return
+    setLoopMsg(dir > 0 ? "Back to the first video" : "Jumped to the last video")
+    t.classList.add("looping", dir > 0 ? "loop-fwd" : "loop-back")
+    setTimeout(() => {
+      goTo(dir > 0 ? 0 : n - 1, false)
+      t.classList.remove("looping", "loop-fwd", "loop-back")
+    }, 380)
+    clearTimeout(loopTimer.current)
+    loopTimer.current = setTimeout(() => setLoopMsg(null), 1700)
+  }
 
   const onTrackScroll = () => {
     const t = trackRef.current
@@ -363,8 +383,8 @@ export default function Portfolio() {
               tabIndex={0}
               aria-label="Videos, use the arrow keys to browse"
               onKeyDown={(e) => {
-                if (e.key === "ArrowRight") (e.preventDefault(), goTo(idx + 1))
-                if (e.key === "ArrowLeft") (e.preventDefault(), goTo(idx - 1))
+                if (e.key === "ArrowRight") (e.preventDefault(), stepReel(1))
+                if (e.key === "ArrowLeft") (e.preventDefault(), stepReel(-1))
                 if (e.key === "Enter" && cur) setActive(cur)
               }}
             >
@@ -394,12 +414,18 @@ export default function Portfolio() {
               ))}
             </div>
 
-            <button className="reel-btn prev" onClick={() => goTo(idx - 1)} disabled={idx === 0} aria-label="Previous video">
+            <button className="reel-btn prev" onClick={() => stepReel(-1)} disabled={shown.length < 2} aria-label="Previous video">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M15 5l-7 7 7 7" />
               </svg>
             </button>
-            <button className="reel-btn next" onClick={() => goTo(idx + 1)} disabled={idx >= shown.length - 1} aria-label="Next video">
+            <div className={`loop-toast ${loopMsg ? "show" : ""}`} role="status">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4h-4" />
+              </svg>
+              {loopMsg}
+            </div>
+            <button className="reel-btn next" onClick={() => stepReel(1)} disabled={shown.length < 2} aria-label="Next video">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M9 5l7 7-7 7" />
               </svg>
