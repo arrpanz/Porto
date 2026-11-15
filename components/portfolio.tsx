@@ -348,6 +348,11 @@ export default function Portfolio() {
                         <i aria-hidden>▶</i> Watch a piece from this
                       </button>
                     )}
+                    {e.link && (
+                      <a className="watch" href={e.link.href} target="_blank" rel="noopener noreferrer">
+                        <i aria-hidden>▶</i> {e.link.label} ↗
+                      </a>
+                    )}
                   </div>
                 </div>
               </li>

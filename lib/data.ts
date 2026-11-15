@@ -181,6 +181,7 @@ export interface Experience {
   summary: string
   points: string[]
   videoId?: string // opens this piece from the "Watch" button
+  link?: { label: string; href: string } // external piece (e.g. an Instagram post)
 }
 
 // Newest first. Add dates to `period` (e.g. "2024 — 2025") when you have them.
@@ -194,6 +195,7 @@ export const experience: Experience[] = [
       "Dialogue-led ads and reels — take selection, pacing, colour, sound and captions",
       "Vertical-first delivery for social platforms",
     ],
+    link: { label: "Watch a client video on Instagram", href: "https://www.instagram.com/p/DFZoS-1JpHh/" },
   },
   {
     period: "Previously",
