@@ -42,18 +42,6 @@ export const videos: Video[] = [
     role: ["Edit", "Colour", "Sound design"],
   },
   {
-    id: "rr-blanc-raza",
-    src: "/videos/rr-blanc-raza.mp4",
-    title: "Blanc Events: Raza",
-    client: "Blanc Events · RestoRefine Studios",
-    category: "Social Media",
-    orientation: "portrait",
-    year: "2026",
-    duration: "0:33",
-    blurb: "A personality-led reel for an events venue, cut for pace and a strong first three seconds.",
-    role: ["Edit"],
-  },
-  {
     id: "rr-damasqino-shawarma",
     src: "/videos/rr-damasqino-shawarma.mp4",
     title: "Shawarma Challenge",
