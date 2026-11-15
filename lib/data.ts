@@ -2,11 +2,12 @@
 // All site content lives here. Edit this file to update the site.
 // ─────────────────────────────────────────────────────────────
 
-export type Category = "Ad Videos" | "Vlogish" | "Misc"
+export type Category = "Ad Videos" | "Social Media" | "Vlogish" | "Misc"
 export type Orientation = "portrait" | "landscape" | "square"
 
 export interface Video {
-  id: string // YouTube video ID
+  id: string // YouTube video ID, or a slug for self-hosted videos
+  src?: string // self-hosted file in /public/videos (omit for YouTube)
   title: string
   client: string
   category: Category
@@ -39,6 +40,90 @@ export const videos: Video[] = [
     duration: "0:23",
     blurb: "A short brand film built on texture and atmosphere: slow reveals, warm grade, cut to breathe.",
     role: ["Edit", "Colour", "Sound design"],
+  },
+  {
+    id: "rr-blanc-raza",
+    src: "/videos/rr-blanc-raza.mp4",
+    title: "Blanc Events: Raza",
+    client: "Blanc Events · RestoRefine Studios",
+    category: "Social Media",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:33",
+    blurb: "A personality-led reel for an events venue, cut for pace and a strong first three seconds.",
+    role: ["Edit"],
+  },
+  {
+    id: "rr-damasqino-shawarma",
+    src: "/videos/rr-damasqino-shawarma.mp4",
+    title: "Shawarma Challenge",
+    client: "Damasqino · RestoRefine Studios",
+    category: "Social Media",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:26",
+    blurb: "A food challenge reel built on quick cuts and close-up prep shots.",
+    role: ["Edit"],
+  },
+  {
+    id: "rr-lamb-boti",
+    src: "/videos/rr-lamb-boti.mp4",
+    title: "Lamb Boti",
+    client: "Restaurant client · RestoRefine Studios",
+    category: "Social Media",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:39",
+    blurb: "Dialogue-led kitchen reel with captions timed to the delivery.",
+    role: ["Edit"],
+  },
+  {
+    id: "rr-hariyali",
+    src: "/videos/rr-hariyali.mp4",
+    title: "Hariyali Tikka",
+    client: "Himalayan Dine In · RestoRefine Studios",
+    category: "Social Media",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:11",
+    blurb: "An eleven-second dish reel: tandoor to plate.",
+    role: ["Edit"],
+  },
+  {
+    id: "rr-rajas-pizza",
+    src: "/videos/rr-rajas-pizza.mp4",
+    title: "Three Pizza Deal",
+    client: "Rajas · RestoRefine Studios",
+    category: "Social Media",
+    orientation: "portrait",
+    year: "2025",
+    duration: "0:15",
+    blurb: "A price-led offer reel with bold on-screen text.",
+    role: ["Edit"],
+  },
+  {
+    id: "rr-failte-pancakes",
+    src: "/videos/rr-failte-pancakes.mp4",
+    title: "Pancakes",
+    client: "Failte · RestoRefine Studios",
+    category: "Social Media",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:19",
+    blurb: "A menu-item reel shot front of house and in the kitchen.",
+    role: ["Edit"],
+  },
+  {
+    id: "rr-favspot-chicken",
+    src: "/videos/rr-favspot-chicken.mp4",
+    title: "Chicken & Bacon",
+    client: "Fav Spot · RestoRefine Studios",
+    category: "Social Media",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:13",
+    blurb: "A fast build-the-dish reel made for short attention spans.",
+    role: ["Edit"],
   },
   {
     id: "TZ-vmdelkcY",

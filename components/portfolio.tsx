@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { employment, profile, projects, stats, toolkit, videos, type Category, type Video } from "@/lib/data"
 
-const FILTERS: ("All" | Category)[] = ["All", "Ad Videos", "Vlogish", "Misc"]
+const FILTERS: ("All" | Category)[] = ["All", "Ad Videos", "Social Media", "Vlogish", "Misc"]
 const thumb = (id: string) => `/thumbs/${id}.jpg`
 const HERO_ID = "2vrnZd0FzC4"
 const pad = (n: number) => String(n).padStart(2, "0")
@@ -396,7 +396,8 @@ export default function Portfolio() {
                   onMouseLeave={previewOff}
                 >
                   <img src={thumb(v.id)} alt="" draggable={false} loading={i < 4 ? "eager" : "lazy"} />
-                  {hoverId === v.id && !active && (
+                  {hoverId === v.id && !active && v.src && <video src={v.src} muted autoPlay loop playsInline />}
+                  {hoverId === v.id && !active && !v.src && (
                     <iframe
                       src={`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&mute=1&loop=1&playlist=${v.id}&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1`}
                       title={`${v.title} preview`}
@@ -643,13 +644,17 @@ export default function Portfolio() {
           </button>
           <div className={`lb-inner ${active.orientation}`} onClick={(e) => e.stopPropagation()}>
             <div className="player">
-              <iframe
-                key={active.id}
-                src={`https://www.youtube-nocookie.com/embed/${active.id}?autoplay=1&rel=0&playsinline=1`}
-                title={active.title}
-                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
-              />
+              {active.src ? (
+                <video key={active.id} src={active.src} poster={thumb(active.id)} controls autoPlay playsInline />
+              ) : (
+                <iframe
+                  key={active.id}
+                  src={`https://www.youtube-nocookie.com/embed/${active.id}?autoplay=1&rel=0&playsinline=1`}
+                  title={active.title}
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  allowFullScreen
+                />
+              )}
             </div>
             <div className="lb-info">
               <span className="eyebrow">
@@ -663,9 +668,11 @@ export default function Portfolio() {
                   <li key={r}>{r}</li>
                 ))}
               </ul>
-              <a href={`https://www.youtube.com/watch?v=${active.id}`} target="_blank" rel="noopener noreferrer">
-                Open on YouTube ↗
-              </a>
+{!active.src && (
+                <a href={`https://www.youtube.com/watch?v=${active.id}`} target="_blank" rel="noopener noreferrer">
+                  Open on YouTube ↗
+                </a>
+              )}
             </div>
           </div>
         </div>
