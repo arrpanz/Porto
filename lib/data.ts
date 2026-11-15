@@ -2,7 +2,7 @@
 // All site content lives here. Edit this file to update the site.
 // ─────────────────────────────────────────────────────────────
 
-export type Category = "Ad Videos" | "Social Media" | "Vlogish" | "Misc"
+export type Category = "Ad Videos" | "Social Media" | "Personal Content"
 export type Orientation = "portrait" | "landscape" | "square"
 
 export interface Video {
@@ -117,7 +117,7 @@ export const videos: Video[] = [
     id: "TZ-vmdelkcY",
     title: "Nine to Five",
     client: "Personal film",
-    category: "Misc",
+    category: "Personal Content",
     orientation: "portrait",
     year: "2024",
     duration: "0:37",
@@ -128,7 +128,7 @@ export const videos: Video[] = [
     id: "2vrnZd0FzC4",
     title: "Evening Escapes",
     client: "Personal film · Sony ZV-1",
-    category: "Vlogish",
+    category: "Personal Content",
     orientation: "landscape",
     year: "2023",
     duration: "0:41",
@@ -150,7 +150,7 @@ export const videos: Video[] = [
     id: "qJgj8YXsLKk",
     title: "And this was my year 2022",
     client: "Personal film",
-    category: "Vlogish",
+    category: "Personal Content",
     orientation: "landscape",
     year: "2023",
     duration: "3:58",
@@ -172,7 +172,7 @@ export const videos: Video[] = [
     id: "aWMa7umDH4o",
     title: "POV: it's 3 AM",
     client: "Personal film",
-    category: "Misc",
+    category: "Personal Content",
     orientation: "square",
     year: "2023",
     duration: "0:22",
@@ -183,7 +183,7 @@ export const videos: Video[] = [
     id: "Dw8BRAAaQSY",
     title: "RE Hunter 350",
     client: "Personal film",
-    category: "Misc",
+    category: "Personal Content",
     orientation: "portrait",
     year: "2023",
     duration: "0:15",
@@ -194,7 +194,7 @@ export const videos: Video[] = [
     id: "1jrs0ad8BVE",
     title: "Setting up my new space",
     client: "Personal film",
-    category: "Vlogish",
+    category: "Personal Content",
     orientation: "landscape",
     year: "2023",
     duration: "0:37",
@@ -205,7 +205,7 @@ export const videos: Video[] = [
     id: "o7immgdRNTg",
     title: "Janakpur",
     client: "Travel film",
-    category: "Vlogish",
+    category: "Personal Content",
     orientation: "portrait",
     year: "2024",
     duration: "0:20",
@@ -216,7 +216,7 @@ export const videos: Video[] = [
     id: "BZ7TyTdsjik",
     title: "The Art of Making Coffee",
     client: "Personal film",
-    category: "Vlogish",
+    category: "Personal Content",
     orientation: "landscape",
     year: "2023",
     duration: "0:32",
@@ -227,7 +227,7 @@ export const videos: Video[] = [
     id: "OHy7NG0opCc",
     title: "The Art of Making Tea",
     client: "Personal film",
-    category: "Vlogish",
+    category: "Personal Content",
     orientation: "landscape",
     year: "2023",
     duration: "0:43",

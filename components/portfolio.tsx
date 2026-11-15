@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { employment, profile, projects, stats, toolkit, videos, type Category, type Video } from "@/lib/data"
 
-const FILTERS: ("All" | Category)[] = ["All", "Ad Videos", "Social Media", "Vlogish", "Misc"]
+const FILTERS: ("All" | Category)[] = ["All", "Ad Videos", "Social Media", "Personal Content"]
 const thumb = (id: string) => `/thumbs/${id}.jpg`
 const HERO_ID = "2vrnZd0FzC4"
 const pad = (n: number) => String(n).padStart(2, "0")
