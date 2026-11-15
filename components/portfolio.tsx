@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { employment, profile, projects, stats, toolkit, videos, type Category, type Video } from "@/lib/data"
 
-const FILTERS: Category[] = ["Social Media", "Ad Videos", "Cinematic Videos"]
+const FILTERS: Category[] = ["Social Media", "Ad Videos", "Nepali Content", "Cinematic Videos"]
 const thumb = (id: string) => `/thumbs/${id}.jpg`
 const pad = (n: number) => String(n).padStart(2, "0")
 
@@ -25,8 +25,8 @@ export default function Portfolio() {
   const drag = useRef({ down: false, x: 0, left: 0, moved: false })
 
   const shown = useMemo(() => videos.filter((v) => v.category === filter), [filter])
-  // hero film strip: client work only (own-channel films stay in their category)
-  const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait" && v.category !== "Cinematic Videos"), [])
+  // hero film strip: a sample of client work (own-channel films stay in their category)
+  const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait" && v.category !== "Cinematic Videos").slice(0, 12), [])
 
   // Running timecode (30 fps) in the hero
   useEffect(() => {
@@ -351,7 +351,7 @@ export default function Portfolio() {
             </div>
           </div>
 
-          <div className="reel reveal">
+          <div className={`reel reveal ${cur ? `at-${cur.orientation}` : ""}`}>
             <div
               className="reel-track"
               ref={trackRef}
@@ -394,10 +394,18 @@ export default function Portfolio() {
               ))}
             </div>
 
+            <button className="reel-btn prev" onClick={() => goTo(idx - 1)} disabled={idx === 0} aria-label="Previous video">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M15 5l-7 7 7 7" />
+              </svg>
+            </button>
+            <button className="reel-btn next" onClick={() => goTo(idx + 1)} disabled={idx >= shown.length - 1} aria-label="Next video">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
             <div className="reel-bar">
-              <button className="reel-btn" onClick={() => goTo(idx - 1)} disabled={idx === 0} aria-label="Previous video">
-                ←
-              </button>
               {cur && (
                 <div className="reel-caption" aria-live="polite">
                   <span className="count">
@@ -409,9 +417,6 @@ export default function Portfolio() {
                   </small>
                 </div>
               )}
-              <button className="reel-btn" onClick={() => goTo(idx + 1)} disabled={idx >= shown.length - 1} aria-label="Next video">
-                →
-              </button>
             </div>
             <p className="reel-hint">Hover to preview, click for sound, swipe or use the arrows</p>
           </div>
