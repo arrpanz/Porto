@@ -315,6 +315,17 @@ h2 { font-size: clamp(34px, 5.4vw, 84px); line-height: 0.94; letter-spacing: -0.
 .lb-nav:hover, .lb-close:hover { background: var(--accent); border-color: var(--accent); color: #0a0a0a; }
 .lb-nav.prev { left: 14px; } .lb-nav.next { right: 14px; }
 
+/* ── Rounded corners ── */
+.nav { border-radius: 999px; padding-left: 22px; }
+.btn, .filters button, .period, .tag, .toolkit li, .links a, .lb-close, .lb-info li { border-radius: 999px; }
+.cursor span, .logo i, .reel-btn, .watch i, .lb-nav, .avail i, .exp-body ul li::before { border-radius: 50%; }
+.slide, .player, .avatar { border-radius: 20px; }
+.exp > li, .slate, .track-head { border-radius: 16px; }
+.slate { overflow: hidden; }
+.track-head b { border-radius: 10px; }
+.frame { border-radius: 10px; }
+.files b, .slide-tag, .slide-dur { border-radius: 6px; }
+
 /* ── Responsive ── */
 @media (max-width: 1000px) {
   .split, .about, .tracks { grid-template-columns: 1fr; }
@@ -327,7 +338,7 @@ h2 { font-size: clamp(34px, 5.4vw, 84px); line-height: 0.94; letter-spacing: -0.
   .avail { margin-left: 0; }
   .gridlines { background-size: 50% 100%; }
   .nav { gap: 8px; }
-  .nav nav { position: absolute; top: calc(100% + 6px); left: -1px; right: -1px; flex-direction: column; gap: 2px; padding: 14px 18px; background: #111; border: 1px solid var(--line); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); display: none; }
+  .nav nav { border-radius: 18px; position: absolute; top: calc(100% + 6px); left: -1px; right: -1px; flex-direction: column; gap: 2px; padding: 14px 18px; background: #111; border: 1px solid var(--line); font-size: 22px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); display: none; }
   .nav nav.open { display: flex; }
   .burger { display: block; }
   .hero-foot { grid-template-columns: 1fr; }
