@@ -408,6 +408,10 @@ h2 { line-height: 1.02; }
   var(--bg); }
 .hero-bg::after { background: linear-gradient(to top, var(--bg) 2%, transparent 40%); }
 
+/* bring Experience up close behind the work reel */
+#work { padding-bottom: clamp(36px, 4vw, 64px); }
+#experience { padding-top: clamp(48px, 6vw, 90px); }
+
 /* ── Responsive ── */
 @media (max-width: 1000px) {
   .split, .about, .tracks { grid-template-columns: 1fr; }
