@@ -177,6 +177,7 @@ h2 { font-size: clamp(34px, 5.4vw, 84px); line-height: 0.94; letter-spacing: -0.
 .reel-track::-webkit-scrollbar { display: none; }
 .reel-track::before, .reel-track::after { content: ""; flex: none; width: 50%; }
 .reel-track.dragging { scroll-snap-type: none; cursor: grabbing; }
+.reel-track.gliding { scroll-snap-type: none; }
 .slide {
   position: relative; flex: none; scroll-snap-align: center; overflow: hidden; background: #000; cursor: pointer;
   opacity: 0.32; transform: scale(0.9); transition: opacity 0.5s var(--ease), transform 0.5s var(--ease), box-shadow 0.3s;
@@ -427,20 +428,6 @@ h2 { line-height: 1.02; }
 .reel-btn { display: grid; place-items: center; }
 .reel-btn:hover:not(:disabled) { scale: 1.1; }
 .reel-btn:disabled { opacity: 0; pointer-events: none; }
-
-/* reel loop: slides sweep out, a pill says where you landed */
-.reel-track.looping .slide { opacity: 0; transition: opacity 0.3s var(--ease), transform 0.36s var(--ease); }
-.reel-track.loop-fwd .slide { transform: translateX(-90px) scale(0.86); }
-.reel-track.loop-back .slide { transform: translateX(90px) scale(0.86); }
-.loop-toast {
-  position: absolute; z-index: 4; left: 50%; top: calc((var(--h) + 24px) / 2); translate: -50% -50%;
-  display: inline-flex; align-items: center; gap: 10px; padding: 12px 18px; border-radius: 999px; white-space: nowrap;
-  background: #fff; color: #0a0a0a; font-size: 14px; font-weight: 500; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
-  opacity: 0; scale: 0.9; pointer-events: none; transition: opacity 0.3s var(--ease), scale 0.3s var(--ease);
-}
-.loop-toast.show { opacity: 1; scale: 1; }
-.loop-toast.show svg { animation: loop-spin 0.7s var(--ease); }
-@keyframes loop-spin { from { rotate: -360deg; } }
 
 /* ── Responsive ── */
 @media (max-width: 1000px) {

@@ -13,9 +13,8 @@ export default function Portfolio() {
   const [openExp, setOpenExp] = useState(0)
   const [copied, setCopied] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [idx, setIdx] = useState(0) // centred slide in the reel
-  const [hoverId, setHoverId] = useState<string | null>(null)
-  const [loopMsg, setLoopMsg] = useState<string | null>(null)
+  const [pos, setPos] = useState(0) // centred slide in the reel (position in the tripled list)
+  const [hoverPos, setHoverPos] = useState<number | null>(null)
 
   const tcRef = useRef<HTMLSpanElement>(null)
   const clockRef = useRef<HTMLSpanElement>(null)
@@ -24,9 +23,17 @@ export default function Portfolio() {
   const trackRef = useRef<HTMLDivElement>(null)
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const drag = useRef({ down: false, x: 0, left: 0, moved: false })
-  const loopTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const touching = useRef(false)
+  const glide = useRef(0) // running scroll animation frame
+  const stepping = useRef(false) // an arrow/click scroll is in flight
+  const target = useRef(0) // where that scroll is heading
 
   const shown = useMemo(() => videos.filter((v) => v.category === filter), [filter])
+  const n = shown.length
+  const loops = n > 1
+  const slides = useMemo(() => (shown.length > 1 ? [...shown, ...shown, ...shown] : shown), [shown])
+  const idx = n ? pos % n : 0
   // hero film strip: a sample of client work (own-channel films stay in their category)
   const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait" && v.category !== "Cinematic Videos").slice(0, 12), [])
 
@@ -145,36 +152,12 @@ export default function Portfolio() {
     }
   }, [active, stepVideo])
 
-  // ── Reel (centred carousel) ──
-  const goTo = useCallback((i: number, smooth = true) => {
+  // ── Reel (centred carousel, endless) ──
+  // The list is rendered three times. The viewer sits in the middle copy; whenever scrolling
+  // settles in an outer copy we shift by exactly one copy's width, which looks identical.
+  const centrePos = () => {
     const t = trackRef.current
-    if (!t) return
-    const el = t.children[Math.max(0, Math.min(t.children.length - 1, i))] as HTMLElement | undefined
-    if (!el) return
-    t.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - t.clientWidth / 2, behavior: smooth ? "smooth" : "instant" })
-  }, [])
-
-  // Step with wrap-around: past the last video it rewinds to the first (and back), with a visible cue.
-  const stepReel = (dir: number) => {
-    const n = shown.length
-    if (n < 2) return
-    const target = idx + dir
-    if (target >= 0 && target < n) return goTo(target)
-    const t = trackRef.current
-    if (!t) return
-    setLoopMsg(dir > 0 ? "Back to the first video" : "Jumped to the last video")
-    t.classList.add("looping", dir > 0 ? "loop-fwd" : "loop-back")
-    setTimeout(() => {
-      goTo(dir > 0 ? 0 : n - 1, false)
-      t.classList.remove("looping", "loop-fwd", "loop-back")
-    }, 380)
-    clearTimeout(loopTimer.current)
-    loopTimer.current = setTimeout(() => setLoopMsg(null), 1700)
-  }
-
-  const onTrackScroll = () => {
-    const t = trackRef.current
-    if (!t) return
+    if (!t) return 0
     const mid = t.scrollLeft + t.clientWidth / 2
     let best = 0
     let dist = Infinity
@@ -186,17 +169,97 @@ export default function Portfolio() {
         best = i
       }
     })
-    setIdx(best)
+    return best
+  }
+
+  const stopGlide = useCallback(() => {
+    cancelAnimationFrame(glide.current)
+    glide.current = 0
+    trackRef.current?.classList.remove("gliding")
+  }, [])
+
+  // Our own eased scroll, so it behaves the same in every browser and can be redirected mid-flight.
+  const goTo = useCallback(
+    (i: number, smooth = true) => {
+      const t = trackRef.current
+      if (!t) return
+      const el = t.children[Math.max(0, Math.min(t.children.length - 1, i))] as HTMLElement | undefined
+      if (!el) return
+      const to = el.offsetLeft + el.offsetWidth / 2 - t.clientWidth / 2
+      stopGlide()
+      if (!smooth) {
+        t.scrollTo({ left: to, behavior: "instant" })
+        return
+      }
+      const from = t.scrollLeft
+      const t0 = performance.now()
+      const dur = 460
+      t.classList.add("gliding") // snapping off while we drive the scroll
+      const frame = (now: number) => {
+        const k = Math.min(1, (now - t0) / dur)
+        t.scrollLeft = from + (to - from) * (1 - Math.pow(1 - k, 3))
+        if (k < 1) glide.current = requestAnimationFrame(frame)
+        else stopGlide()
+      }
+      glide.current = requestAnimationFrame(frame)
+    },
+    [stopGlide],
+  )
+
+  // Move back into the middle copy if we drifted out of it. Returns the centred position.
+  const recentre = () => {
+    const t = trackRef.current
+    let p = centrePos()
+    if (!t || !loops) return p
+    const shift = p < n ? 1 : p >= 2 * n ? -1 : 0
+    if (shift) {
+      const w = t.children[n].getBoundingClientRect().left - t.children[0].getBoundingClientRect().left
+      t.scrollTo({ left: t.scrollLeft + shift * w, behavior: "instant" })
+      p += shift * n
+      setPos(p)
+      setHoverPos((h) => (h === null ? h : h + shift * n))
+    }
+    return p
+  }
+
+  const settle = () => {
+    if (touching.current || drag.current.down) return
+    stepping.current = false
+    target.current = recentre()
+  }
+  const settleSoon = () => {
+    clearTimeout(settleTimer.current)
+    settleTimer.current = setTimeout(settle, 140)
+  }
+
+  // Arrows: every press moves one video on from wherever the reel is heading, so quick presses add up.
+  const stepReel = (dir: number) => {
+    if (n < 2) return
+    const before = centrePos()
+    const base = (stepping.current ? target.current : before) + (recentre() - before)
+    stepping.current = true
+    target.current = Math.max(0, Math.min(slides.length - 1, base + dir))
+    goTo(target.current)
+  }
+
+  const onTrackScroll = () => {
+    setPos(centrePos())
+    settleSoon()
   }
 
   useEffect(() => {
-    setIdx(0)
-    setHoverId(null)
-    goTo(0, false)
+    const start = shown.length > 1 ? shown.length : 0
+    clearTimeout(settleTimer.current)
+    stepping.current = false
+    target.current = start
+    setPos(start)
+    setHoverPos(null)
+    goTo(start, false)
   }, [shown, goTo])
 
   const onDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType !== "mouse") return // touch uses native swipe
+    stopGlide()
     drag.current = { down: true, x: e.clientX, left: e.currentTarget.scrollLeft, moved: false }
   }
   const onDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -213,22 +276,25 @@ export default function Portfolio() {
     if (!drag.current.down) return
     drag.current.down = false
     e.currentTarget.classList.remove("dragging")
+    settleSoon()
   }
 
-  const previewOn = (id: string) => {
+  const previewOn = (i: number) => {
     clearTimeout(hoverTimer.current)
-    hoverTimer.current = setTimeout(() => setHoverId(id), 220)
+    hoverTimer.current = setTimeout(() => setHoverPos(i), 220)
   }
   const previewOff = () => {
     clearTimeout(hoverTimer.current)
-    setHoverId(null)
+    setHoverPos(null)
   }
   const pickSlide = (v: Video, i: number) => {
     if (drag.current.moved) return // it was a drag, not a click
-    if (i === idx) setActive(v)
-    else goTo(i)
+    if (i === pos) return setActive(v)
+    stepping.current = true
+    target.current = i
+    goTo(i)
   }
-  const cur = shown[Math.min(idx, shown.length - 1)]
+  const cur = shown[idx]
 
   const copyEmail = async () => {
     try {
@@ -380,6 +446,10 @@ export default function Portfolio() {
               onPointerMove={onDragMove}
               onPointerUp={onDragEnd}
               onPointerLeave={onDragEnd}
+              onTouchStart={() => ((touching.current = true), stopGlide())}
+              onWheel={stopGlide}
+              onTouchEnd={() => ((touching.current = false), settleSoon())}
+              onTouchCancel={() => ((touching.current = false), settleSoon())}
               tabIndex={0}
               aria-label="Videos, use the arrow keys to browse"
               onKeyDown={(e) => {
@@ -388,19 +458,20 @@ export default function Portfolio() {
                 if (e.key === "Enter" && cur) setActive(cur)
               }}
             >
-              {shown.map((v, i) => (
+              {slides.map((v, i) => (
                 <div
-                  key={v.id}
+                  key={`${v.id}-${i}`}
                   role="button"
                   aria-label={`${v.title}, play with sound`}
-                  className={`slide ${v.orientation} ${i === idx ? "is-active" : ""}`}
+                  aria-hidden={loops && (i < n || i >= 2 * n) ? true : undefined}
+                  className={`slide ${v.orientation} ${i % n === idx ? "is-active" : ""}`}
                   onClick={() => pickSlide(v, i)}
-                  onMouseEnter={() => previewOn(v.id)}
+                  onMouseEnter={() => previewOn(i)}
                   onMouseLeave={previewOff}
                 >
-                  <img src={thumb(v.id)} alt="" draggable={false} loading={i < 4 ? "eager" : "lazy"} />
-                  {hoverId === v.id && !active && v.src && <video src={v.src} muted autoPlay loop playsInline />}
-                  {hoverId === v.id && !active && !v.src && (
+                  <img src={thumb(v.id)} alt="" draggable={false} />
+                  {hoverPos === i && !active && v.src && <video src={v.src} muted autoPlay loop playsInline />}
+                  {hoverPos === i && !active && !v.src && (
                     <iframe
                       src={`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&mute=1&loop=1&playlist=${v.id}&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1`}
                       title={`${v.title} preview`}
@@ -419,12 +490,6 @@ export default function Portfolio() {
                 <path d="M15 5l-7 7 7 7" />
               </svg>
             </button>
-            <div className={`loop-toast ${loopMsg ? "show" : ""}`} role="status">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                <path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4h-4" />
-              </svg>
-              {loopMsg}
-            </div>
             <button className="reel-btn next" onClick={() => stepReel(1)} disabled={shown.length < 2} aria-label="Next video">
               <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <path d="M9 5l7 7-7 7" />
