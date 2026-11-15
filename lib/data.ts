@@ -2,7 +2,7 @@
 // All site content lives here. Edit this file to update the site.
 // ─────────────────────────────────────────────────────────────
 
-export type Category = "Commercial" | "Stories" | "Cinematic"
+export type Category = "Ad Videos" | "Vlogish" | "Misc"
 export type Orientation = "portrait" | "landscape" | "square"
 
 export interface Video {
@@ -33,18 +33,18 @@ export const videos: Video[] = [
     id: "bao-XpfqI70",
     title: "Moksh Heritage",
     client: "Moksh Heritage",
-    category: "Commercial",
+    category: "Ad Videos",
     orientation: "portrait",
     year: "2025",
     duration: "0:23",
-    blurb: "A short brand film built on texture and atmosphere — slow reveals, warm grade, cut to breathe.",
+    blurb: "A short brand film built on texture and atmosphere: slow reveals, warm grade, cut to breathe.",
     role: ["Edit", "Colour", "Sound design"],
   },
   {
     id: "TZ-vmdelkcY",
     title: "Nine to Five",
     client: "Personal film",
-    category: "Stories",
+    category: "Misc",
     orientation: "portrait",
     year: "2024",
     duration: "0:37",
@@ -55,7 +55,7 @@ export const videos: Video[] = [
     id: "2vrnZd0FzC4",
     title: "Evening Escapes",
     client: "Personal film · Sony ZV-1",
-    category: "Cinematic",
+    category: "Vlogish",
     orientation: "landscape",
     year: "2023",
     duration: "0:41",
@@ -63,21 +63,10 @@ export const videos: Video[] = [
     role: ["Camera", "Edit", "Colour"],
   },
   {
-    id: "EvvR8aD9PVs",
-    title: "Introducing Creatix & Co",
-    client: "Creatix & Co",
-    category: "Commercial",
-    orientation: "portrait",
-    year: "2025",
-    duration: "0:16",
-    blurb: "A sixteen-second brand introduction — tight pacing, type-led motion, zero wasted frames.",
-    role: ["Direction", "Camera", "Edit"],
-  },
-  {
     id: "-TVa6UjYEdw",
     title: "X-Age Infinity Smartwatch",
     client: "Gadgets In Nepal",
-    category: "Commercial",
+    category: "Ad Videos",
     orientation: "portrait",
     year: "2023",
     duration: "Short",
@@ -88,29 +77,29 @@ export const videos: Video[] = [
     id: "qJgj8YXsLKk",
     title: "And this was my year 2022",
     client: "Personal film",
-    category: "Stories",
+    category: "Vlogish",
     orientation: "landscape",
     year: "2023",
     duration: "3:58",
-    blurb: "A year of footage condensed into four minutes — a recap edit driven by rhythm and memory.",
+    blurb: "A year of footage condensed into four minutes: a recap edit driven by rhythm and memory.",
     role: ["Camera", "Edit", "Colour"],
   },
   {
     id: "TtnmnCybrKs",
     title: "Daily Life with Realme 11x 5G",
     client: "Gadgets In Nepal",
-    category: "Commercial",
+    category: "Ad Videos",
     orientation: "portrait",
     year: "2023",
     duration: "Short",
-    blurb: "A day-in-the-life product film — lifestyle footage shaped into a clean, fast feature walkthrough.",
+    blurb: "A day-in-the-life product film: lifestyle footage shaped into a clean, fast feature walkthrough.",
     role: ["Cinematography"],
   },
   {
     id: "aWMa7umDH4o",
     title: "POV: it's 3 AM",
     client: "Personal film",
-    category: "Stories",
+    category: "Misc",
     orientation: "square",
     year: "2023",
     duration: "0:22",
@@ -121,18 +110,18 @@ export const videos: Video[] = [
     id: "Dw8BRAAaQSY",
     title: "RE Hunter 350",
     client: "Personal film",
-    category: "Cinematic",
+    category: "Misc",
     orientation: "portrait",
     year: "2023",
     duration: "0:15",
-    blurb: "A fifteen-second motorcycle spot — speed ramps, hard cuts and engine-led sound.",
+    blurb: "A fifteen-second motorcycle spot: speed ramps, hard cuts and engine-led sound.",
     role: ["Camera", "Edit", "Sound design"],
   },
   {
     id: "1jrs0ad8BVE",
     title: "Setting up my new space",
     client: "Personal film",
-    category: "Cinematic",
+    category: "Vlogish",
     orientation: "landscape",
     year: "2023",
     duration: "0:37",
@@ -143,18 +132,18 @@ export const videos: Video[] = [
     id: "o7immgdRNTg",
     title: "Janakpur",
     client: "Travel film",
-    category: "Stories",
+    category: "Vlogish",
     orientation: "portrait",
     year: "2024",
     duration: "0:20",
-    blurb: "A travel postcard from Janakpur — colour, crowd and architecture in twenty seconds.",
+    blurb: "A travel postcard from Janakpur: colour, crowd and architecture in twenty seconds.",
     role: ["Camera", "Edit", "Colour"],
   },
   {
     id: "BZ7TyTdsjik",
     title: "The Art of Making Coffee",
     client: "Personal film",
-    category: "Cinematic",
+    category: "Vlogish",
     orientation: "landscape",
     year: "2023",
     duration: "0:32",
@@ -165,11 +154,11 @@ export const videos: Video[] = [
     id: "OHy7NG0opCc",
     title: "The Art of Making Tea",
     client: "Personal film",
-    category: "Cinematic",
+    category: "Vlogish",
     orientation: "landscape",
     year: "2023",
     duration: "0:43",
-    blurb: "The companion piece — steam, pour, stillness.",
+    blurb: "The companion piece: steam, pour, stillness.",
     role: ["Camera", "Edit"],
   },
 ]
@@ -184,15 +173,15 @@ export interface Experience {
   link?: { label: string; href: string } // external piece (e.g. an Instagram post)
 }
 
-// Newest first. Add dates to `period` (e.g. "2024 — 2025") when you have them.
-export const experience: Experience[] = [
+// Track V1 — jobs, newest first. Add dates to `period` (e.g. "2024 — 2025") when you have them.
+export const employment: Experience[] = [
   {
     period: "Current",
     role: "Video Editor",
     org: "RestoRefine Studios",
     summary: "Editing client ads and short-form content from raw footage to final delivery.",
     points: [
-      "Dialogue-led ads and reels — take selection, pacing, colour, sound and captions",
+      "Dialogue-led ads and reels: take selection, pacing, colour, sound and captions",
       "Vertical-first delivery for social platforms",
     ],
     link: { label: "Watch a client video on Instagram", href: "https://www.instagram.com/p/DFZoS-1JpHh/" },
@@ -201,19 +190,18 @@ export const experience: Experience[] = [
     period: "Previously",
     role: "Cinematographer",
     org: "Asteroids Studio",
-    summary: "Behind the camera on studio productions — framing, lighting and movement.",
+    summary: "Behind the camera on studio productions: framing, lighting and movement.",
     points: ["Shot with the edit in mind, so footage cuts together cleanly"],
   },
   {
     period: "Previously",
     role: "Content Head & Co-Founder",
     org: "Creatix & Co Pvt. Ltd.",
-    summary: "Co-founded a creative company and led its content — from concept through shoot to final cut.",
+    summary: "Co-founded a creative company and led its content, from concept through shoot to final cut.",
     points: [
       "Set the creative direction and look of the brand's content",
       "Handled production end to end: planning, shooting and editing",
     ],
-    videoId: "EvvR8aD9PVs",
   },
   {
     period: "Previously",
@@ -230,23 +218,21 @@ export const experience: Experience[] = [
     points: ["Shot smartphone and wearable shorts", "Learned fast-turnaround, hook-first short-form production"],
     videoId: "-TVa6UjYEdw",
   },
-  {
-    period: "On set",
-    role: "Music Video Credits",
-    org: "Cobweb · Yabesh Thapa & Bizen",
-    summary: "Crew work on music video productions.",
-    points: [
-      "Production Assistant — Cobweb, \"Jay Nepal\" music video",
-      "Behind the scenes (BTS) — Yabesh Thapa & Bizen, \"Laijau Hai Timarai Ghara\" music video",
-    ],
-  },
-  {
-    period: "Education",
-    role: "B.E. Computer Engineering",
-    org: "Everest Engineering College, Lalitpur",
-    summary: "An engineering background that shows up as tidy projects, fast workflows and a love of new tools.",
-    points: ["Comfortable with technical pipelines, automation and emerging AI tools in post"],
-  },
+]
+
+// Track V2 — one-off projects and set credits.
+export interface Project {
+  title: string
+  by: string
+  byLabel: string
+  role: string
+  type: string
+  videoId?: string
+}
+
+export const projects: Project[] = [
+  { title: "Jay Nepal", by: "Cobweb", byLabel: "Artist", role: "Production Assistant", type: "Music video" },
+  { title: "Laijau Hai Timarai Ghara", by: "Yabesh Thapa & Bizen", byLabel: "Artist", role: "Behind the scenes", type: "Music video" },
 ]
 
 export const toolkit = [
@@ -259,7 +245,7 @@ export const toolkit = [
 ]
 
 export const stats = [
-  { value: 3, suffix: "+", label: "Years editing" },
-  { value: videos.length, suffix: "", label: "Featured pieces" },
-  { value: 30, suffix: "fps", label: "Frame-accurate, always" },
+  { value: 4, suffix: "+", label: "Years creating", desc: "From personal films to client ads, studio shoots and a company of my own." },
+  { value: videos.length, suffix: "", label: "Featured pieces", desc: "A selection across commercial, story-led and cinematic work." },
+  { value: 30, suffix: "fps", label: "Frame-accurate", desc: "Every cut is placed on purpose, down to the frame." },
 ]

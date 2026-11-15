@@ -1,10 +1,11 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { experience, profile, stats, toolkit, videos, type Category, type Video } from "@/lib/data"
+import { employment, profile, projects, stats, toolkit, videos, type Category, type Video } from "@/lib/data"
 
-const FILTERS: ("All" | Category)[] = ["All", "Commercial", "Stories", "Cinematic"]
+const FILTERS: ("All" | Category)[] = ["All", "Ad Videos", "Vlogish", "Misc"]
 const thumb = (id: string) => `/thumbs/${id}.jpg`
+const HERO_ID = "2vrnZd0FzC4"
 const pad = (n: number) => String(n).padStart(2, "0")
 
 export default function Portfolio() {
@@ -13,10 +14,16 @@ export default function Portfolio() {
   const [openExp, setOpenExp] = useState(0)
   const [copied, setCopied] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [idx, setIdx] = useState(0) // centred slide in the reel
+  const [hoverId, setHoverId] = useState<string | null>(null)
 
   const tcRef = useRef<HTMLSpanElement>(null)
+  const clockRef = useRef<HTMLSpanElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const cursorRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const drag = useRef({ down: false, x: 0, left: 0, moved: false })
 
   const shown = useMemo(() => (filter === "All" ? videos : videos.filter((v) => v.category === filter)), [filter])
   const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait"), [])
@@ -33,7 +40,16 @@ export default function Portfolio() {
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    const clock = () => {
+      if (clockRef.current)
+        clockRef.current.textContent = `${new Date().toLocaleTimeString("en-US", { timeZone: "Asia/Kathmandu" })} NPT`
+    }
+    clock()
+    const iv = setInterval(clock, 1000)
+    return () => {
+      cancelAnimationFrame(raf)
+      clearInterval(iv)
+    }
   }, [])
 
   // Scroll progress "playhead"
@@ -127,16 +143,72 @@ export default function Portfolio() {
     }
   }, [active, stepVideo])
 
-  const tilt = (e: React.MouseEvent<HTMLElement>) => {
-    const el = e.currentTarget
-    const r = el.getBoundingClientRect()
-    el.style.setProperty("--rx", `${((e.clientY - r.top) / r.height - 0.5) * -6}deg`)
-    el.style.setProperty("--ry", `${((e.clientX - r.left) / r.width - 0.5) * 6}deg`)
+  // ── Reel (centred carousel) ──
+  const goTo = useCallback((i: number, smooth = true) => {
+    const t = trackRef.current
+    if (!t) return
+    const el = t.children[Math.max(0, Math.min(t.children.length - 1, i))] as HTMLElement | undefined
+    if (!el) return
+    t.scrollTo({ left: el.offsetLeft + el.offsetWidth / 2 - t.clientWidth / 2, behavior: smooth ? "smooth" : "instant" })
+  }, [])
+
+  const onTrackScroll = () => {
+    const t = trackRef.current
+    if (!t) return
+    const mid = t.scrollLeft + t.clientWidth / 2
+    let best = 0
+    let dist = Infinity
+    Array.from(t.children).forEach((c, i) => {
+      const el = c as HTMLElement
+      const d = Math.abs(el.offsetLeft + el.offsetWidth / 2 - mid)
+      if (d < dist) {
+        dist = d
+        best = i
+      }
+    })
+    setIdx(best)
   }
-  const untilt = (e: React.MouseEvent<HTMLElement>) => {
-    e.currentTarget.style.setProperty("--rx", "0deg")
-    e.currentTarget.style.setProperty("--ry", "0deg")
+
+  useEffect(() => {
+    setIdx(0)
+    setHoverId(null)
+    goTo(0, false)
+  }, [shown, goTo])
+
+  const onDragStart = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== "mouse") return // touch uses native swipe
+    drag.current = { down: true, x: e.clientX, left: e.currentTarget.scrollLeft, moved: false }
   }
+  const onDragMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const d = drag.current
+    if (!d.down) return
+    const dx = e.clientX - d.x
+    if (Math.abs(dx) > 6 && !d.moved) {
+      d.moved = true
+      e.currentTarget.classList.add("dragging")
+    }
+    if (d.moved) e.currentTarget.scrollLeft = d.left - dx
+  }
+  const onDragEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current.down) return
+    drag.current.down = false
+    e.currentTarget.classList.remove("dragging")
+  }
+
+  const previewOn = (id: string) => {
+    clearTimeout(hoverTimer.current)
+    hoverTimer.current = setTimeout(() => setHoverId(id), 220)
+  }
+  const previewOff = () => {
+    clearTimeout(hoverTimer.current)
+    setHoverId(null)
+  }
+  const pickSlide = (v: Video, i: number) => {
+    if (drag.current.moved) return // it was a drag, not a click
+    if (i === idx) setActive(v)
+    else goTo(i)
+  }
+  const cur = shown[Math.min(idx, shown.length - 1)]
 
   const copyEmail = async () => {
     try {
@@ -162,6 +234,7 @@ export default function Portfolio() {
 
   return (
     <>
+      <div className="gridlines" aria-hidden />
       <div className="grain" aria-hidden />
       <div className="progress" aria-hidden>
         <div ref={progressRef} />
@@ -193,6 +266,15 @@ export default function Portfolio() {
       <main id="top">
         {/* ───────── HERO ───────── */}
         <section className="hero">
+          <div className="hero-bg" aria-hidden>
+            <img src={thumb(HERO_ID)} alt="" />
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${HERO_ID}?autoplay=1&mute=1&loop=1&playlist=${HERO_ID}&start=6&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1`}
+              title="Background reel"
+              allow="autoplay; encrypted-media"
+              tabIndex={-1}
+            />
+          </div>
           <div className="hero-meta">
             <span className="rec">
               <i /> REC
@@ -206,6 +288,10 @@ export default function Portfolio() {
             </span>
           </div>
 
+          <button className="showreel" data-play onClick={() => setActive(videos[0])}>
+            <i aria-hidden /> Play featured cut
+          </button>
+
           <h1>
             <span className="line">
               <span>I cut stories</span>
@@ -218,17 +304,26 @@ export default function Portfolio() {
           </h1>
 
           <div className="hero-foot">
-            <p>
-              I&apos;m <strong>{profile.name}</strong> — a video editor and filmmaker from {profile.location}, with three
-              years of turning raw footage into brand films, tech shorts and stories that hold attention.
-            </p>
-            <div className="cta">
-              <a href="#work" className="btn">
-                Watch the work <span aria-hidden>↓</span>
-              </a>
-              <a href="#contact" className="btn btn-ghost">
-                Get in touch
-              </a>
+            <ul className="brackets">
+              <li>[{profile.location}]</li>
+              <li>[{profile.title}]</li>
+              <li>
+                <i aria-hidden /> <span ref={clockRef}>Kathmandu time</span>
+              </li>
+            </ul>
+            <div>
+              <p>
+                I&apos;m <strong>{profile.name}</strong>. Every frame has a job and every cut has a reason. I turn raw
+                footage into brand films, short-form and stories that hold attention.
+              </p>
+              <div className="cta">
+                <a href="#work" className="btn">
+                  View works <span aria-hidden>↓</span>
+                </a>
+                <a href="#contact" className="btn btn-ghost">
+                  Get in touch
+                </a>
+              </div>
             </div>
           </div>
 
@@ -258,7 +353,8 @@ export default function Portfolio() {
         {/* ───────── WORK ───────── */}
         <section id="work" className="section">
           <div className="section-head reveal">
-            <span className="eyebrow">01 — Selected work</span>
+            <span className="eyebrow">Featured works</span>
+            <span className="files"><b>SCENE_01.MP4</b><b>MASTER_EDIT.DRP</b></span>
             <h2>
               Frames that <em>earn</em> the next one.
             </h2>
@@ -272,32 +368,68 @@ export default function Portfolio() {
             </div>
           </div>
 
-          <div className="grid-wrap">
-            <div className="grid">
+          <div className="reel reveal">
+            <div
+              className="reel-track"
+              ref={trackRef}
+              onScroll={onTrackScroll}
+              onPointerDown={onDragStart}
+              onPointerMove={onDragMove}
+              onPointerUp={onDragEnd}
+              onPointerLeave={onDragEnd}
+              tabIndex={0}
+              aria-label="Videos, use the arrow keys to browse"
+              onKeyDown={(e) => {
+                if (e.key === "ArrowRight") (e.preventDefault(), goTo(idx + 1))
+                if (e.key === "ArrowLeft") (e.preventDefault(), goTo(idx - 1))
+                if (e.key === "Enter" && cur) setActive(cur)
+              }}
+            >
               {shown.map((v, i) => (
-                <button
+                <div
                   key={v.id}
-                  className={`card ${v.orientation} reveal`}
-                  style={{ transitionDelay: `${(i % 4) * 60}ms` }}
-                  data-play
-                  onClick={() => setActive(v)}
-                  onMouseMove={tilt}
-                  onMouseLeave={untilt}
+                  role="button"
+                  aria-label={`${v.title}, play with sound`}
+                  className={`slide ${v.orientation} ${i === idx ? "is-active" : ""}`}
+                  onClick={() => pickSlide(v, i)}
+                  onMouseEnter={() => previewOn(v.id)}
+                  onMouseLeave={previewOff}
                 >
-                  <img src={thumb(v.id)} alt={v.title} loading="lazy" />
-                  <span className="card-top">
-                    <span>{v.category}</span>
-                    <span>{v.duration}</span>
-                  </span>
-                  <span className="card-info">
-                    <strong>{v.title}</strong>
-                    <small>
-                      {v.client} · {v.year}
-                    </small>
-                  </span>
-                </button>
+                  <img src={thumb(v.id)} alt="" draggable={false} loading={i < 4 ? "eager" : "lazy"} />
+                  {hoverId === v.id && !active && (
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&mute=1&loop=1&playlist=${v.id}&controls=0&playsinline=1&rel=0&modestbranding=1&disablekb=1`}
+                      title={`${v.title} preview`}
+                      allow="autoplay; encrypted-media"
+                      tabIndex={-1}
+                    />
+                  )}
+                  <span className="slide-tag">{v.category}</span>
+                  <span className="slide-dur">{v.duration}</span>
+                </div>
               ))}
             </div>
+
+            <div className="reel-bar">
+              <button className="reel-btn" onClick={() => goTo(idx - 1)} disabled={idx === 0} aria-label="Previous video">
+                ←
+              </button>
+              {cur && (
+                <div className="reel-caption" aria-live="polite">
+                  <span className="count">
+                    {pad(idx + 1)} / {pad(shown.length)}
+                  </span>
+                  <strong>{cur.title}</strong>
+                  <small>
+                    {cur.client} · {cur.year}
+                  </small>
+                </div>
+              )}
+              <button className="reel-btn" onClick={() => goTo(idx + 1)} disabled={idx >= shown.length - 1} aria-label="Next video">
+                →
+              </button>
+            </div>
+            <p className="reel-hint">Hover to preview · Click for sound · Swipe, drag or use the arrows</p>
           </div>
           <p className="more reveal">
             More on{" "}
@@ -312,52 +444,105 @@ export default function Portfolio() {
         </section>
 
         {/* ───────── EXPERIENCE ───────── */}
-        <section id="experience" className="section split">
+        <section id="experience" className="section">
           <div className="section-head reveal">
-            <span className="eyebrow">02 — Experience</span>
+            <span className="eyebrow">Experience</span>
+            <span className="files"><b>A_CAM_012.MXF</b><b>TIMELINE_V3.DRP</b></span>
             <h2>
-              The <em>timeline</em> so far.
+              Two tracks, <em>one timeline.</em>
             </h2>
-            <p className="lede">From a tech-channel internship to co-founding a studio — shooting and cutting along the way. Tap a clip to open it.</p>
-            <a href={profile.cv} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-              View CV ↗
-            </a>
+            <p className="lede">Jobs on one track, one-off projects on the other, the way they&apos;d sit in an edit.</p>
           </div>
 
-          <ol className="exp">
-            {experience.map((e, i) => (
-              <li key={e.role + e.org} className={`reveal ${openExp === i ? "open" : ""}`}>
-                <button onClick={() => setOpenExp(openExp === i ? -1 : i)} aria-expanded={openExp === i}>
-                  <span className="period">{e.period}</span>
-                  <span className="what">
-                    <strong>{e.role}</strong>
-                    <small>{e.org}</small>
-                  </span>
-                  <span className="plus" aria-hidden />
-                </button>
-                <div className="exp-body">
-                  <div>
-                    <p>{e.summary}</p>
-                    <ul>
-                      {e.points.map((p) => (
-                        <li key={p}>{p}</li>
-                      ))}
-                    </ul>
-                    {e.videoId && (
-                      <button className="watch" data-play onClick={() => openById(e.videoId)}>
-                        <i aria-hidden>▶</i> Watch a piece from this
+          <div className="tracks">
+            <div className="track">
+              <div className="track-head reveal">
+                <b>V1</b>
+                <span>Employment</span>
+                <small>{pad(employment.length)} clips</small>
+              </div>
+              <ol className="exp">
+                {employment.map((e, i) => (
+                  <li key={e.role + e.org} className={`reveal ${openExp === i ? "open" : ""}`}>
+                    <button onClick={() => setOpenExp(openExp === i ? -1 : i)} aria-expanded={openExp === i}>
+                      <span className="idx">[{String(i + 1).padStart(3, "0")}]</span>
+                      <span className="what">
+                        <strong>{e.role}</strong>
+                        <small>{e.org}</small>
+                      </span>
+                      <span className="period">{e.period}</span>
+                      <span className="plus" aria-hidden />
+                    </button>
+                    <div className="exp-body">
+                      <div>
+                        <p>{e.summary}</p>
+                        <ul>
+                          {e.points.map((p) => (
+                            <li key={p}>{p}</li>
+                          ))}
+                        </ul>
+                        {e.videoId && (
+                          <button className="watch" data-play onClick={() => openById(e.videoId)}>
+                            <i aria-hidden>▶</i> Watch a piece from this
+                          </button>
+                        )}
+                        {e.link && (
+                          <a className="watch" href={e.link.href} target="_blank" rel="noopener noreferrer">
+                            <i aria-hidden>▶</i> {e.link.label} ↗
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              <a href={profile.cv} target="_blank" rel="noopener noreferrer" className="btn btn-ghost cv reveal">
+                View CV ↗
+              </a>
+            </div>
+
+            <div className="track">
+              <div className="track-head alt reveal">
+                <b>V2</b>
+                <span>Projects</span>
+                <small>{pad(projects.length)} clips</small>
+              </div>
+              <ul className="slates">
+                {projects.map((p, i) => (
+                  <li key={p.title} className="slate reveal">
+                    <div className="slate-top" aria-hidden />
+                    <dl>
+                      <div className="wide">
+                        <dt>Prod.</dt>
+                        <dd>{p.title}</dd>
+                      </div>
+                      <div>
+                        <dt>{p.byLabel}</dt>
+                        <dd>{p.by}</dd>
+                      </div>
+                      <div>
+                        <dt>Role</dt>
+                        <dd>{p.role}</dd>
+                      </div>
+                      <div>
+                        <dt>Type</dt>
+                        <dd>{p.type}</dd>
+                      </div>
+                      <div>
+                        <dt>Slate</dt>
+                        <dd>{pad(i + 1)}</dd>
+                      </div>
+                    </dl>
+                    {p.videoId && (
+                      <button className="watch" data-play onClick={() => openById(p.videoId)}>
+                        <i aria-hidden>▶</i> Watch
                       </button>
                     )}
-                    {e.link && (
-                      <a className="watch" href={e.link.href} target="_blank" rel="noopener noreferrer">
-                        <i aria-hidden>▶</i> {e.link.label} ↗
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ol>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </section>
 
         {/* ───────── ABOUT ───────── */}
@@ -369,18 +554,18 @@ export default function Portfolio() {
             </span>
           </div>
           <div className="about-copy reveal">
-            <span className="eyebrow">03 — About</span>
+            <span className="eyebrow">Meet Arpan</span>
+            <span className="files"><b>TAKE_08.MOV</b><b>COLOR_PASS.MOV</b></span>
             <h2>
-              Editor by craft, <em>engineer</em> by training.
+              Editor by craft, <em>filmmaker</em> at heart.
             </h2>
             <p>
-              Hi, I&apos;m Arpan. I started by filming my own days on a Sony ZV-E10 and cutting them late at night — and
+              Hi, I&apos;m Arpan. I started by filming my own days on a Sony ZV-E10 and cutting them late at night, and
               never really stopped. Since then I&apos;ve shot and edited for studios, agencies and my own company, shaping pace, colour and sound until a piece
               feels inevitable.
             </p>
             <p>
-              A computer-engineering background keeps my projects organised and my workflow fast. You bring the idea or
-              the footage; I&apos;ll fuel it and bring it to life in the edit.
+              You bring the idea or the footage; I&apos;ll fuel it and bring it to life in the edit.
             </p>
 
             <div className="stats">
@@ -388,9 +573,10 @@ export default function Portfolio() {
                 <div key={s.label}>
                   <b>
                     <span data-count={s.value}>0</span>
-                    {s.suffix}
+                    <sup>{s.suffix}</sup>
                   </b>
                   <small>{s.label}</small>
+                  <p>{s.desc}</p>
                 </div>
               ))}
             </div>
@@ -408,27 +594,29 @@ export default function Portfolio() {
 
         {/* ───────── CONTACT ───────── */}
         <section id="contact" className="section contact">
-          <span className="eyebrow reveal">04 — Contact</span>
+          <span className="eyebrow reveal">Contact</span>
           <h2 className="reveal">
             Got footage?
             <br />
             Let&apos;s make it <em>worth rewatching.</em>
           </h2>
-          <button className="email reveal" onClick={copyEmail}>
-            {profile.email}
-            <span>{copied ? "Copied ✓" : "Click to copy"}</span>
-          </button>
-          <div className="links reveal">
-            <a href={`mailto:${profile.email}`}>Email ↗</a>
-            <a href={profile.instagram} target="_blank" rel="noopener noreferrer">
-              Instagram ↗
-            </a>
-            <a href={profile.youtube} target="_blank" rel="noopener noreferrer">
-              YouTube ↗
-            </a>
-            <a href={profile.cv} target="_blank" rel="noopener noreferrer">
-              CV ↗
-            </a>
+          <div className="contact-row">
+            <button className="email reveal" onClick={copyEmail}>
+              {profile.email}
+              <span>{copied ? "Copied ✓" : "Click to copy"}</span>
+            </button>
+            <div className="links reveal">
+              <a href={`mailto:${profile.email}`}>Email ↗</a>
+              <a href={profile.instagram} target="_blank" rel="noopener noreferrer">
+                Instagram ↗
+              </a>
+              <a href={profile.youtube} target="_blank" rel="noopener noreferrer">
+                YouTube ↗
+              </a>
+              <a href={profile.cv} target="_blank" rel="noopener noreferrer">
+                CV ↗
+              </a>
+            </div>
           </div>
         </section>
       </main>
