@@ -132,9 +132,11 @@ em { font-style: normal; color: var(--accent); }
 .film { overflow: hidden; background: #000; border-block: 1px solid var(--line); padding: 22px 0; position: relative; opacity: 0; animation: fade 1s 0.7s forwards; }
 .film::before, .film::after { content: ""; position: absolute; left: 0; right: 0; height: 10px; background: repeating-linear-gradient(90deg, transparent 0 10px, rgba(255, 255, 255, 0.16) 10px 24px, transparent 24px 34px); }
 .film::before { top: 6px; } .film::after { bottom: 6px; }
-.film-track { display: flex; gap: 8px; width: max-content; animation: slide 46s linear infinite; }
-.film:hover .film-track, .film:focus-within .film-track { animation-play-state: paused; }
-@keyframes slide { to { transform: translateX(calc(-50% - 4px)); } }
+.film-track { display: flex; gap: 8px; width: max-content; will-change: transform; } /* drifts from JS (FilmStrip) */
+/* small side arrows on the film strip */
+.film-btn { position: absolute; z-index: 3; top: 50%; translate: 0 -50%; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #0a0a0a; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55); transition: scale 0.25s var(--ease); }
+.film-btn:hover { scale: 1.1; }
+.film-btn.prev { left: 10px; } .film-btn.next { right: 10px; }
 .frame { position: relative; width: clamp(90px, 10vw, 140px); aspect-ratio: 9/16; overflow: hidden; flex: none; }
 .frame img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.6) brightness(0.75); transition: filter 0.4s, transform 0.6s var(--ease); }
 .frame:hover img { filter: none; transform: scale(1.06); }
@@ -452,6 +454,8 @@ h2 { line-height: 1.02; }
   .stats > div { grid-template-columns: auto 1fr; column-gap: 20px; }
   .links { grid-template-columns: 1fr 1fr; }
   .lightbox { padding: 64px 14px 80px; place-items: start center; }
+  .film-btn { width: 30px; height: 30px; }
+  .film-btn.prev { left: 8px; } .film-btn.next { right: 8px; }
   .lb-inner, .lb-inner.landscape { flex-direction: column; align-items: center; }
   .portrait .player { height: min(62vh, 560px); }
   .square .player { height: auto; width: 100%; }
@@ -468,6 +472,8 @@ h2 { line-height: 1.02; }
   .line > span, .reveal { transform: none; }
   .hero-foot, .film, .reveal, .slide iframe { opacity: 1; }
   .hero-bg iframe { display: none; }
+  /* the tag strip keeps moving; it's slow, steady and small */
+  .marquee div { animation: slide2 32s linear infinite !important; }
 }
 
 /* Small disclosure under a video title */
