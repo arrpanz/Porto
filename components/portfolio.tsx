@@ -493,7 +493,10 @@ export default function Portfolio() {
                 </div>
               )}
             </div>
-            <p className="reel-hint">Hover to preview, click for sound, swipe or use the arrows</p>
+            <p className="reel-hint">
+              <span className="hint-mouse">Hover to preview, click for sound, swipe or use the arrows</span>
+              <span className="hint-touch">Tap a video for sound, swipe or use the arrows</span>
+            </p>
           </div>
           <p className="more reveal">
             More on{" "}
@@ -677,10 +680,14 @@ export default function Portfolio() {
             Close ✕
           </button>
           <button className="lb-nav prev" aria-label="Previous" onClick={(e) => (e.stopPropagation(), stepVideo(-1))}>
-            ←
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
           </button>
           <button className="lb-nav next" aria-label="Next" onClick={(e) => (e.stopPropagation(), stepVideo(1))}>
-            →
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M9 5l7 7-7 7" />
+            </svg>
           </button>
           <div className={`lb-inner ${active.orientation}`} onClick={(e) => e.stopPropagation()}>
             <div className="player">
