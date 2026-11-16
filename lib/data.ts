@@ -26,7 +26,7 @@ export const profile = {
   email: "wastiarpan7@gmail.com",
   instagram: "https://www.instagram.com/arrpanz/",
   youtube: "https://www.youtube.com/@ArpanWasti",
-  cv: "https://drive.google.com/file/d/1-wbleXpKZSvU_RLbMAWdwsuGiFHDY1cl/view?usp=drive_link",
+  cv: "/Arpan-Wasti-CV.pdf",
 }
 
 export const videos: Video[] = [
