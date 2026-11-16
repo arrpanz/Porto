@@ -506,6 +506,7 @@ export default function Portfolio() {
                   <small>
                     {cur.client} · {cur.year}
                   </small>
+                  {cur.note && <em className="ai-note">{cur.note}</em>}
                 </div>
               )}
             </div>
@@ -717,7 +718,10 @@ export default function Portfolio() {
                 {active.category} · {active.year}
               </span>
               <h3>{active.title}</h3>
-              <small>{active.client}</small>
+              <small>
+                {active.client}
+                {active.note && <em className="ai-note">{active.note}</em>}
+              </small>
               <p>{active.blurb}</p>
               <ul>
                 {active.role.map((r) => (

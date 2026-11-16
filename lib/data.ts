@@ -16,6 +16,7 @@ export interface Video {
   duration: string
   blurb: string
   role: string[]
+  note?: string // small disclosure shown under the title
 }
 
 export const profile = {
@@ -41,6 +42,7 @@ export const videos: Video[] = [
     duration: "0:17",
     blurb: "Presenter-led store opening teaser with whip transitions.",
     role: ["Edit", "Captions"],
+    note: "AI generated first 5 seconds",
   },
   {
     id: "rr-lets-be-honest",

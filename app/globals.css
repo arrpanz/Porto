@@ -469,3 +469,7 @@ h2 { line-height: 1.02; }
   .hero-foot, .film, .reveal, .slide iframe { opacity: 1; }
   .hero-bg iframe { display: none; }
 }
+
+/* Small disclosure under a video title */
+.ai-note { display: block; justify-self: center; font: 500 9.5px/1.3 var(--font-mono), monospace; font-style: normal; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); opacity: 0.8; margin-top: 2px; }
+.lb-info .ai-note { margin-top: 6px; }
