@@ -137,7 +137,7 @@ export const videos: Video[] = [
     orientation: "portrait",
     year: "2026",
     duration: "0:14",
-    blurb: "A layer-by-layer burger build with colour-wipe transitions.",
+    blurb: "A layer-by-layer burger build with color-wipe transitions.",
     role: ["Edit", "Captions"],
   },
   {
@@ -233,7 +233,7 @@ export const videos: Video[] = [
     year: "2025",
     duration: "0:23",
     blurb: "A short brand film built on texture and atmosphere: slow reveals, warm grade, cut to breathe.",
-    role: ["Edit", "Colour", "Sound design"],
+    role: ["Edit", "Color", "Sound design"],
   },
   {
     id: "np-december-intake",
@@ -256,7 +256,7 @@ export const videos: Video[] = [
     year: "2024",
     duration: "0:37",
     blurb: "A voiceover-led piece about the weight of routine. Written, shot and cut as one idea.",
-    role: ["Direction", "Camera", "Edit", "Colour"],
+    role: ["Direction", "Camera", "Edit", "Color"],
   },
   {
     id: "2vrnZd0FzC4",
@@ -267,7 +267,7 @@ export const videos: Video[] = [
     year: "2023",
     duration: "0:41",
     blurb: "Golden-hour b-roll study. Shot on a pocket camera, graded for mood, cut to the music.",
-    role: ["Camera", "Edit", "Colour"],
+    role: ["Camera", "Edit", "Color"],
   },
   {
     id: "-TVa6UjYEdw",
@@ -289,7 +289,7 @@ export const videos: Video[] = [
     year: "2023",
     duration: "3:58",
     blurb: "A year of footage condensed into four minutes: a recap edit driven by rhythm and memory.",
-    role: ["Camera", "Edit", "Colour"],
+    role: ["Camera", "Edit", "Color"],
   },
   {
     id: "TtnmnCybrKs",
@@ -333,7 +333,7 @@ export const videos: Video[] = [
     year: "2023",
     duration: "0:37",
     blurb: "A desk-setup montage. Detail shots, match cuts and a tidy rhythm.",
-    role: ["Camera", "Edit", "Colour"],
+    role: ["Camera", "Edit", "Color"],
   },
   {
     id: "o7immgdRNTg",
@@ -343,8 +343,8 @@ export const videos: Video[] = [
     orientation: "portrait",
     year: "2024",
     duration: "0:20",
-    blurb: "A travel postcard from Janakpur: colour, crowd and architecture in twenty seconds.",
-    role: ["Camera", "Edit", "Colour"],
+    blurb: "A travel postcard from Janakpur: color, crowd and architecture in twenty seconds.",
+    role: ["Camera", "Edit", "Color"],
   },
   {
     id: "BZ7TyTdsjik",
@@ -388,7 +388,7 @@ export const employment: Experience[] = [
     org: "RestoRefine Studios",
     summary: "Editing client ads and short-form content from raw footage to final delivery.",
     points: [
-      "Dialogue-led ads and reels: take selection, pacing, colour, sound and captions",
+      "Dialogue-led ads and reels: take selection, pacing, color, sound and captions",
       "Vertical-first delivery for social platforms",
     ],
     link: { label: "Watch a client video on Instagram", href: "https://www.instagram.com/p/DFZoS-1JpHh/" },
@@ -443,12 +443,12 @@ export const projects: Project[] = [
 ]
 
 export const toolkit = [
-  { name: "DaVinci Resolve", note: "Edit · Colour" },
+  { name: "DaVinci Resolve", note: "Edit · Color" },
   { name: "Adobe Premiere Pro", note: "Edit" },
   { name: "After Effects", note: "Motion" },
   { name: "Sony ZV-E10", note: "Camera" },
   { name: "Sound Design", note: "Mix · SFX" },
-  { name: "Colour Grading", note: "Look dev" },
+  { name: "Color Grading", note: "Look dev" },
 ]
 
 export const stats = [
