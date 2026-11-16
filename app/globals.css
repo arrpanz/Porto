@@ -145,10 +145,9 @@ em { font-style: normal; color: var(--accent); }
 
 /* ── Marquee ── */
 .marquee { overflow: hidden; border-bottom: 1px solid var(--line); padding: 16px 0; background: var(--accent); color: #0a0a0a; }
-.marquee div { display: flex; width: max-content; animation: slide2 32s linear infinite; }
+.marquee div { display: flex; width: max-content; will-change: transform; } /* scrolls from JS (TagStrip) */
 .marquee span { font-size: clamp(16px, 1.8vw, 24px); font-weight: 600; text-transform: uppercase; letter-spacing: -0.01em; white-space: pre; }
 .marquee b { font-size: 0.6em; vertical-align: middle; margin: 0 1em; }
-@keyframes slide2 { to { transform: translateX(-50%); } }
 
 /* ── Sections ── */
 .section { padding: clamp(72px, 10vw, 150px) var(--pad); }
@@ -472,8 +471,6 @@ h2 { line-height: 1.02; }
   .line > span, .reveal { transform: none; }
   .hero-foot, .film, .reveal, .slide iframe { opacity: 1; }
   .hero-bg iframe { display: none; }
-  /* the tag strip keeps moving; it's slow, steady and small */
-  .marquee div { animation: slide2 32s linear infinite !important; }
 }
 
 /* Small disclosure under a video title */
