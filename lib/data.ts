@@ -236,6 +236,54 @@ export const videos: Video[] = [
     role: ["Edit", "Color", "Sound design"],
   },
   {
+    id: "tn-websites",
+    src: "/videos/tn-websites.mp4",
+    title: "Rs 30,000 vs Rs 5 Lakh Websites",
+    client: "Tech Nirvana",
+    category: "Nepali Content",
+    orientation: "portrait",
+    year: "2026",
+    duration: "1:15",
+    blurb: "Why two websites that look alike can cost so differently: templates versus custom platforms, cut with screen-recording cutaways.",
+    role: ["Edit", "Captions", "Motion graphics"],
+  },
+  {
+    id: "tn-right-software",
+    src: "/videos/tn-right-software.mp4",
+    title: "The Right Software",
+    client: "Tech Nirvana",
+    category: "Nepali Content",
+    orientation: "portrait",
+    year: "2026",
+    duration: "1:05",
+    blurb: "A Nepali-language explainer on moving a business off paper files and spreadsheets, with icon animations and bilingual captions.",
+    role: ["Edit", "Captions", "Motion graphics"],
+  },
+  {
+    id: "tn-cloud-security",
+    src: "/videos/tn-cloud-security.mp4",
+    title: "Could Your Website Survive?",
+    client: "Tech Nirvana",
+    category: "Nepali Content",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:50",
+    blurb: "Cheap shared hosting versus proper hosting, told to camera with animated keyword captions on security, speed and uptime.",
+    role: ["Edit", "Captions", "Motion graphics"],
+  },
+  {
+    id: "tn-app-build",
+    src: "/videos/tn-app-build.mp4",
+    title: "From Idea to App",
+    client: "Tech Nirvana",
+    category: "Nepali Content",
+    orientation: "portrait",
+    year: "2026",
+    duration: "0:39",
+    blurb: "Behind the scenes of a progressive web app build, from user journey and design to testing, cut with office b-roll.",
+    role: ["Edit", "Captions", "Motion graphics"],
+  },
+  {
     id: "np-december-intake",
     src: "/videos/np-december-intake.mp4",
     title: "December Intake",
@@ -439,7 +487,7 @@ export interface Project {
 
 export const projects: Project[] = [
   { title: "Jay Nepal", by: "Cobweb", byLabel: "Artist", role: "Production Assistant", type: "Music video" },
-  { title: "Laijau Hai Timarai Ghara", by: "Yabesh Thapa & Bizen", byLabel: "Artist", role: "Behind the scenes", type: "Music video" },
+  { title: "Laijau Hai Timro Ghar", by: "Yabesh Thapa & Bizen", byLabel: "Artist", role: "Behind the scenes", type: "Music video" },
 ]
 
 export const toolkit = [
