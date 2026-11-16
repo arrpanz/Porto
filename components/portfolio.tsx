@@ -3,12 +3,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { employment, profile, projects, stats, toolkit, videos, type Category, type Video } from "@/lib/data"
 
-const FILTERS: Category[] = ["Social Media", "Ad Videos", "Nepali Content", "Cinematic Videos"]
+type Filter = "All" | Category
+const FILTERS: Filter[] = ["All", "Social Media", "Ad Videos", "Nepali Content", "Cinematic Videos"]
+// local (Nepali) work leads the All tab and the hero film strip
+const isLocal = (v: Video) => v.category === "Nepali Content"
 const thumb = (id: string) => `/thumbs/${id}.jpg`
 const pad = (n: number) => String(n).padStart(2, "0")
 
 export default function Portfolio() {
-  const [filter, setFilter] = useState<Category>("Social Media")
+  const [filter, setFilter] = useState<Filter>("All")
+  const [order, setOrder] = useState<string[] | null>(null) // shuffled ids for the All tab, set after mount
   const [active, setActive] = useState<Video | null>(null)
   const [openExp, setOpenExp] = useState(0)
   const [copied, setCopied] = useState(false)
@@ -29,13 +33,31 @@ export default function Portfolio() {
   const stepping = useRef(false) // an arrow/click scroll is in flight
   const target = useRef(0) // where that scroll is heading
 
-  const shown = useMemo(() => videos.filter((v) => v.category === filter), [filter])
+  // All tab: local work first, then everything else shuffled on each visit (after mount, so the server and
+  // browser render the same first page)
+  useEffect(() => {
+    const rest = videos.filter((v) => !isLocal(v)).map((v) => v.id)
+    for (let i = rest.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[rest[i], rest[j]] = [rest[j], rest[i]]
+    }
+    setOrder(rest)
+  }, [])
+  const allVideos = useMemo(() => {
+    const byId = new Map(videos.map((v) => [v.id, v]))
+    const rest = order ? order.map((id) => byId.get(id)!) : videos.filter((v) => !isLocal(v))
+    return [...videos.filter(isLocal), ...rest]
+  }, [order])
+  const shown = useMemo(() => (filter === "All" ? allVideos : videos.filter((v) => v.category === filter)), [filter, allVideos])
   const n = shown.length
   const loops = n > 1
   const slides = useMemo(() => (shown.length > 1 ? [...shown, ...shown, ...shown] : shown), [shown])
   const idx = n ? pos % n : 0
   // hero film strip: a sample of client work (own-channel films stay in their category)
-  const strip = useMemo(() => videos.filter((v) => v.orientation === "portrait" && v.category !== "Cinematic Videos").slice(0, 12), [])
+  const strip = useMemo(() => {
+    const pool = videos.filter((v) => v.orientation === "portrait" && v.category !== "Cinematic Videos")
+    return [...pool.filter(isLocal), ...pool.filter((v) => !isLocal(v))].slice(0, 14) // local work first
+  }, [])
 
   // Running timecode (30 fps) in the hero
   useEffect(() => {
@@ -414,7 +436,7 @@ export default function Portfolio() {
               {FILTERS.map((f) => (
                 <button key={f} role="tab" aria-selected={filter === f} className={filter === f ? "on" : ""} onClick={() => setFilter(f)}>
                   {f}
-                  <sup>{videos.filter((v) => v.category === f).length}</sup>
+                  <sup>{f === "All" ? videos.length : videos.filter((v) => v.category === f).length}</sup>
                 </button>
               ))}
             </div>
