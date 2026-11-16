@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Instrument_Serif, Inter_Tight, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
+import FaviconIntro from "@/components/favicon-intro"
 
 const sans = Inter_Tight({ subsets: ["latin"], variable: "--font-sans" })
 const serif = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-serif" })
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <FaviconIntro />
+      </body>
     </html>
   )
 }
