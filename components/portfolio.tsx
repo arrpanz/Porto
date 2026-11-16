@@ -401,15 +401,7 @@ export default function Portfolio() {
         </section>
 
         {/* ───────── MARQUEE ───────── */}
-        <div className="marquee" aria-hidden>
-          <div>
-            {Array.from({ length: 2 }).map((_, k) => (
-              <span key={k}>
-                Brand films <b>✦</b> Short-form <b>✦</b> Colour grading <b>✦</b> Sound design <b>✦</b> Motion graphics <b>✦</b> Storytelling <b>✦</b>{" "}
-              </span>
-            ))}
-          </div>
-        </div>
+        <TagStrip />
 
         {/* ───────── WORK ───────── */}
         <section id="work" className="section">
@@ -610,7 +602,7 @@ export default function Portfolio() {
             </h2>
             <p>
               Hi, I&apos;m Arpan. I started by filming my own days on a Sony ZV-E10 and cutting them late at night, and
-              never really stopped. Since then I&apos;ve shot and edited for studios, agencies and my own company, shaping pace, colour and sound until a piece
+              never really stopped. Since then I&apos;ve shot and edited for studios, agencies and my own company, shaping pace, color and sound until a piece
               feels inevitable.
             </p>
             <p>
@@ -732,6 +724,60 @@ export default function Portfolio() {
   )
 }
 
+// Runs `step(dt)` every frame. If the browser stops delivering animation frames while the page is still
+// visible (some phone browsers do), a timer takes over so the motion never freezes.
+function startLoop(step: (dt: number) => void) {
+  let last = performance.now()
+  let lastFrame = last
+  let raf = 0
+  const run = (now: number) => {
+    const dt = Math.min(now - last, 50) / 1000
+    last = now
+    step(dt)
+  }
+  const frame = () => {
+    lastFrame = performance.now()
+    run(lastFrame)
+    raf = requestAnimationFrame(frame)
+  }
+  raf = requestAnimationFrame(frame)
+  const timer = setInterval(() => {
+    const now = performance.now()
+    if (now - lastFrame > 250 && !document.hidden) run(now)
+  }, 33)
+  return () => {
+    cancelAnimationFrame(raf)
+    clearInterval(timer)
+  }
+}
+
+// The line of tags under the hero. It scrolls left forever, driven from JS like the film strip.
+function TagStrip() {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    let offset = 0
+    return startLoop((dt) => {
+      const period = el.scrollWidth / 2 // the text is doubled, so half the width loops seamlessly
+      if (period <= 0) return
+      offset = (offset + Math.max(period / 32, 45) * dt) % period
+      el.style.transform = `translate3d(${-offset}px, 0, 0)`
+    })
+  }, [])
+  return (
+    <div className="marquee" aria-hidden>
+      <div ref={ref}>
+        {Array.from({ length: 2 }).map((_, k) => (
+          <span key={k}>
+            Brand films <b>✦</b> Short-form <b>✦</b> Color grading <b>✦</b> Sound design <b>✦</b> Motion graphics <b>✦</b> Storytelling <b>✦</b>{" "}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Hero film strip. It drifts left on its own (driven from JS, so it keeps moving with Reduce Motion on), pauses
 // under the mouse or while a frame has keyboard focus, and the small side arrows slide it about half a screen.
 function FilmStrip({ items, onPlay }: { items: Video[]; onPlay: (v: Video) => void }) {
@@ -748,8 +794,6 @@ function FilmStrip({ items, onPlay }: { items: Video[]; onPlay: (v: Video) => vo
     if (!film || !track || !items.length) return
     let period = 0
     let offset = 0
-    let last = performance.now()
-    let raf = 0
     const measure = () => {
       const first = track.firstElementChild as HTMLElement | null
       if (!first) return
@@ -759,22 +803,18 @@ function FilmStrip({ items, onPlay }: { items: Video[]; onPlay: (v: Video) => vo
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(film)
-    const tick = (now: number) => {
-      const dt = Math.min(now - last, 50) / 1000
-      last = now
-      if (period > 0) {
-        if (!hover.current && !focus.current) offset += (period / 46) * dt // one loop every 46 s
-        const move = pending.current * (1 - Math.exp(-dt / 0.12))
-        offset += move
-        pending.current -= move
-        const x = ((offset % period) + period) % period
-        track.style.transform = `translate3d(${-x}px, 0, 0)`
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
+    const stop = startLoop((dt) => {
+      if (period <= 0) return
+      // one loop every 46 s, but never slower than 45 px/s so it reads as moving on a phone
+      if (!hover.current && !focus.current) offset += Math.max(period / 46, 45) * dt
+      const move = pending.current * (1 - Math.exp(-dt / 0.12))
+      offset += move
+      pending.current -= move
+      const x = ((offset % period) + period) % period
+      track.style.transform = `translate3d(${-x}px, 0, 0)`
+    })
     return () => {
-      cancelAnimationFrame(raf)
+      stop()
       ro.disconnect()
     }
   }, [items.length])
@@ -793,7 +833,7 @@ function FilmStrip({ items, onPlay }: { items: Video[]; onPlay: (v: Video) => vo
       aria-label="Featured reels"
       onPointerEnter={(e) => e.pointerType === "mouse" && (hover.current = true)}
       onPointerLeave={() => (hover.current = false)}
-      onFocus={(e) => (focus.current = (e.target as HTMLElement).classList.contains("frame"))}
+      onFocus={(e) => (focus.current = (e.target as HTMLElement).matches(".frame:focus-visible"))}
       onBlur={() => (focus.current = false)}
     >
       <div className="film-track" ref={trackRef}>
