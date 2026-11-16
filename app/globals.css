@@ -474,5 +474,26 @@ h2 { line-height: 1.02; }
 }
 
 /* Small disclosure under a video title */
-.ai-note { display: block; justify-self: center; font: 500 9.5px/1.3 var(--font-mono), monospace; font-style: normal; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); opacity: 0.8; margin-top: 2px; }
-.lb-info .ai-note { margin-top: 6px; }
+.ai-note { display: block; justify-self: center; font: 500 11px/1.35 var(--font-mono), monospace; font-style: normal; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); opacity: 0.8; margin-top: 2px; }
+.lb-info .ai-note { margin-top: 6px; justify-self: start; }
+
+/* ── Touch & tablet polish ── */
+/* lightbox arrows are drawn icons (the ← → characters are missing from some fonts) */
+.lb-nav { display: grid; place-items: center; }
+/* carousel hint: tap wording on touch screens */
+.hint-touch { display: none; }
+@media (hover: none) {
+  .hint-mouse { display: none; }
+  .hint-touch { display: inline; }
+  /* no hover on touch screens, so the film strip titles stay visible */
+  .frame span { opacity: 1; }
+}
+/* bigger tap areas (about 44px) without changing how anything looks */
+.logo { min-height: 44px; }
+.more a, .footer a, .watch, .showreel { position: relative; }
+.more a::after, .footer a::after, .watch::after, .showreel::after { content: ""; position: absolute; inset: -13px -6px; }
+.film-btn::after { content: ""; position: absolute; inset: -7px; border-radius: 50%; }
+/* tablet portrait: the About photo sits centered above the text instead of small on the left */
+@media (min-width: 721px) and (max-width: 1000px) {
+  .avatar { max-width: 440px; margin-inline: auto; width: 100%; }
+}
