@@ -397,16 +397,7 @@ export default function Portfolio() {
             </div>
           </div>
 
-          <div className="film" aria-label="Featured reels">
-            <div className="film-track">
-              {[...strip, ...strip].map((v, i) => (
-                <button key={i} className="frame" data-play onClick={() => setActive(v)} tabIndex={i < strip.length ? 0 : -1} aria-label={`Play ${v.title}`}>
-                  <img src={thumb(v.id)} alt="" loading={i < 6 ? "eager" : "lazy"} />
-                  <span>{v.title}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          <FilmStrip items={strip} onPlay={setActive} />
         </section>
 
         {/* ───────── MARQUEE ───────── */}
@@ -738,5 +729,91 @@ export default function Portfolio() {
         </div>
       )}
     </>
+  )
+}
+
+// Hero film strip. It drifts left on its own (driven from JS, so it keeps moving with Reduce Motion on), pauses
+// under the mouse or while a frame has keyboard focus, and the small side arrows slide it about half a screen.
+function FilmStrip({ items, onPlay }: { items: Video[]; onPlay: (v: Video) => void }) {
+  const filmRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const pending = useRef(0) // distance the arrows still have to slide it (px)
+  const stepPx = useRef(0) // one frame + gap
+  const hover = useRef(false)
+  const focus = useRef(false)
+
+  useEffect(() => {
+    const film = filmRef.current
+    const track = trackRef.current
+    if (!film || !track || !items.length) return
+    let period = 0
+    let offset = 0
+    let last = performance.now()
+    let raf = 0
+    const measure = () => {
+      const first = track.firstElementChild as HTMLElement | null
+      if (!first) return
+      stepPx.current = first.getBoundingClientRect().width + (parseFloat(getComputedStyle(track).columnGap) || 0)
+      period = stepPx.current * items.length // the list is doubled, so one period loops seamlessly
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(film)
+    const tick = (now: number) => {
+      const dt = Math.min(now - last, 50) / 1000
+      last = now
+      if (period > 0) {
+        if (!hover.current && !focus.current) offset += (period / 46) * dt // one loop every 46 s
+        const move = pending.current * (1 - Math.exp(-dt / 0.12))
+        offset += move
+        pending.current -= move
+        const x = ((offset % period) + period) % period
+        track.style.transform = `translate3d(${-x}px, 0, 0)`
+      }
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [items.length])
+
+  const nudge = (dir: 1 | -1) => {
+    const film = filmRef.current
+    if (!film || !stepPx.current) return
+    const frames = Math.max(1, Math.round(film.clientWidth / stepPx.current / 2))
+    pending.current += dir * frames * stepPx.current
+  }
+
+  return (
+    <div
+      className="film"
+      ref={filmRef}
+      aria-label="Featured reels"
+      onPointerEnter={(e) => e.pointerType === "mouse" && (hover.current = true)}
+      onPointerLeave={() => (hover.current = false)}
+      onFocus={(e) => (focus.current = (e.target as HTMLElement).classList.contains("frame"))}
+      onBlur={() => (focus.current = false)}
+    >
+      <div className="film-track" ref={trackRef}>
+        {[...items, ...items].map((v, i) => (
+          <button key={i} className="frame" data-play onClick={() => onPlay(v)} tabIndex={i < items.length ? 0 : -1} aria-label={`Play ${v.title}`}>
+            <img src={thumb(v.id)} alt="" loading={i < 6 ? "eager" : "lazy"} />
+            <span>{v.title}</span>
+          </button>
+        ))}
+      </div>
+      <button className="film-btn prev" onClick={() => nudge(-1)} aria-label="Previous reels">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+      <button className="film-btn next" onClick={() => nudge(1)} aria-label="More reels">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
   )
 }
