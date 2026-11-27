@@ -439,7 +439,7 @@ export const employment: Experience[] = [
       "Dialogue-led ads and reels: take selection, pacing, color, sound and captions",
       "Vertical-first delivery for social platforms",
     ],
-    link: { label: "Watch a client video on Instagram", href: "https://www.instagram.com/p/DFZoS-1JpHh/" },
+    link: { label: "Watch a client video on TikTok", href: "https://www.tiktok.com/@restorefine/video/7647239498434235670" },
   },
   {
     period: "Previously",
