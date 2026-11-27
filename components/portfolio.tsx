@@ -151,7 +151,7 @@ export default function Portfolio() {
   const stepVideo = useCallback(
     (dir: number) => {
       setActive((cur) => {
-        if (!cur) return cur
+        if (!cur || !videos.includes(cur)) return cur // a standalone piece (e.g. from Experience) has no neighbours
         const list = shown.includes(cur) ? shown : videos
         return list[(list.indexOf(cur) + dir + list.length) % list.length]
       })
@@ -573,6 +573,11 @@ export default function Portfolio() {
                             <i aria-hidden>▶</i> Watch a piece from this
                           </button>
                         )}
+                        {e.featured && (
+                          <button className="watch" data-play onClick={() => setActive(e.featured!.video)}>
+                            <i aria-hidden>▶</i> {e.featured.label}
+                          </button>
+                        )}
                         {e.link && (
                           <a className="watch" href={e.link.href} target="_blank" rel="noopener noreferrer">
                             <i aria-hidden>▶</i> {e.link.label} ↗
@@ -701,6 +706,7 @@ export default function Portfolio() {
           <button className="lb-close" aria-label="Close">
             Close ✕
           </button>
+          {videos.includes(active) && (<>
           <button className="lb-nav prev" aria-label="Previous" onClick={(e) => (e.stopPropagation(), stepVideo(-1))}>
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M15 5l-7 7 7 7" />
@@ -711,10 +717,19 @@ export default function Portfolio() {
               <path d="M9 5l7 7-7 7" />
             </svg>
           </button>
+          </>)}
           <div className={`lb-inner ${active.orientation}`} onClick={(e) => e.stopPropagation()}>
             <div className="player">
               {active.src ? (
                 <video key={active.id} src={active.src} poster={thumb(active.id)} controls autoPlay playsInline />
+              ) : active.platform === "tiktok" ? (
+                <iframe
+                  key={active.id}
+                  src={`https://www.tiktok.com/player/v1/${active.id}?autoplay=1&controls=1&progress_bar=1&play_button=1&volume_control=1&fullscreen_button=1&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=1`}
+                  title={active.title}
+                  allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                  allowFullScreen
+                />
               ) : (
                 <iframe
                   key={active.id}
@@ -741,8 +756,12 @@ export default function Portfolio() {
                 ))}
               </ul>
 {!active.src && (
-                <a href={`https://www.youtube.com/watch?v=${active.id}`} target="_blank" rel="noopener noreferrer">
-                  Open on YouTube ↗
+                <a
+                  href={active.url ?? (active.platform === "tiktok" ? `https://www.tiktok.com/embed/v2/${active.id}` : `https://www.youtube.com/watch?v=${active.id}`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open on {active.platform === "tiktok" ? "TikTok" : "YouTube"} ↗
                 </a>
               )}
             </div>

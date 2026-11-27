@@ -8,6 +8,8 @@ export type Orientation = "portrait" | "landscape" | "square"
 export interface Video {
   id: string // YouTube video ID, or a slug for self-hosted videos
   src?: string // self-hosted file in /public/videos (omit for YouTube)
+  platform?: "youtube" | "tiktok" // embedded player for videos without `src` (default YouTube); id is the TikTok video ID
+  url?: string // public post link, shown as "Open on ..." in the player
   title: string
   client: string
   category: Category
@@ -426,6 +428,7 @@ export interface Experience {
   points: string[]
   videoId?: string // opens this piece from the "Watch" button
   link?: { label: string; href: string } // external piece (e.g. an Instagram post)
+  featured?: { label: string; video: Video } // plays this piece in the on-site player (not listed in the Work grid)
 }
 
 // Track V1 — jobs, newest first. Add dates to `period` (e.g. "2024 — 2025") when you have them.
@@ -439,7 +442,22 @@ export const employment: Experience[] = [
       "Dialogue-led ads and reels: take selection, pacing, color, sound and captions",
       "Vertical-first delivery for social platforms",
     ],
-    link: { label: "Watch a client video on Instagram", href: "https://www.instagram.com/p/DFZoS-1JpHh/" },
+    featured: {
+      label: "Watch a client video",
+      video: {
+        id: "7647239498434235670",
+        platform: "tiktok",
+        url: "https://www.tiktok.com/@restorefine/video/7647239498434235670",
+        title: "Client video",
+        client: "RestoRefine Studios",
+        category: "Social Media",
+        orientation: "portrait",
+        year: "2026",
+        duration: "",
+        blurb: "Short-form client piece edited at RestoRefine Studios, delivered vertical-first for social.",
+        role: ["Edit", "Color", "Sound", "Captions"],
+      },
+    },
   },
   {
     period: "Previously",
